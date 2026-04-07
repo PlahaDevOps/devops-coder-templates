@@ -140,3 +140,23 @@ docker compose up -d --force-recreate
 
 - The **deploy** job only succeeds if your tunnel is **up** when the workflow runs (PC on, Docker running, ngrok container or CLI running).
 - A **reserved** ngrok domain stays the same across restarts; ephemeral URLs change each time — then update **`.env`**, OAuth, and **`CODER_URL`**.
+
+### Session log & CI annotations (pick up next session)
+
+**Repo / git (done)**
+
+- Merged local work with `origin/main` using unrelated histories; cleaned leftover merge conflict markers in root **`README.md`** and **`.gitignore`**, then pushed.
+- **`main`** and **`coder-docker-root`** were brought in sync (same tree on GitHub; nothing left to compare for a merge-only PR).
+- **`chore/test-github-workflows`** branch: small doc change under **`coder-templates/docker-dev`** to open a PR and exercise **PR Checks** (`terraform fmt -check`, `init`, `validate`, PR comment).
+
+**GitHub Actions — last run observations**
+
+| Kind | Detail |
+|------|--------|
+| **Error** | **Deploy template to Coder** (`deploy-template.yml`): job failed — **process completed with exit code 1**. Next steps: confirm **`CODER_URL`** / **`CODER_TOKEN`** in repo secrets, tunnel reachable from GitHub, `coder login` + `coder templates push` behavior, and workflow logs for the exact failure line. |
+| **Warning** | **Node.js 20 deprecation:** `actions/checkout@v4` (and other actions) still run on Node 20; runners will default to **Node 24** from **2026-06-02**; Node 20 removed **2026-09-16**. See [GitHub changelog](https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/). Mitigation: use newer action versions that support Node 24 when available, or set `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true` in the workflow to opt in early. |
+
+**Follow-up (tomorrow)**
+
+- Debug deploy **exit code 1** (secrets, connectivity, template path).
+- Optionally bump **`actions/checkout`** (and pin workflow env for Node 24 if needed).
