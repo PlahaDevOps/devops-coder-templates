@@ -36,3 +36,7 @@ docker compose up -d
 4. Verify: **http://localhost:3000/deployment/userauth**
 
 Day-to-day commands (start, stop, restart, logs, recreating after config edits): see **`../README.md`** in the **Coder** folder.
+
+## CI
+
+Pull requests that change files under `coder-templates/` run **Terraform format check** and **`terraform validate`** (see `.github/workflows/pr-check.yml`). Merging to `main` can run **template deploy** if `CODER_URL` and `CODER_TOKEN` are set in repository secrets.
