@@ -1,12 +1,16 @@
 # Coder (local Docker)
 
 ```text
-Coder/
-  ├── docker-compose.yml    ← Coder server config
+Coder/   (devops-coder-templates on GitHub)
+  ├── .github/
+  │     └── workflows/
+  │           ├── pr-check.yml          ← PR: Terraform fmt + validate
+  │           └── deploy-template.yml   ← main: push template to Coder
+  ├── docker-compose.yml
   ├── .env                  ← Secrets (gitignored — never commit)
-  ├── .env.example          ← Copy to .env
+  ├── .env.example
   ├── .gitignore
-  ├── coder-data/           ← Coder database / state (created by Docker)
+  ├── coder-data/
   └── coder-templates/
         └── docker-dev/     ← Workspace template (Terraform)
 ```
@@ -63,3 +67,25 @@ docker compose up -d --force-recreate
 ```
 
 You do not need `docker rm -f coder` each time — Compose recreates the service from your updated files.
+
+## Workspace template (`docker-dev`)
+
+See **`coder-templates/docker-dev/README.md`** for the Terraform template and `coder create … --template=docker-dev`.
+
+## CI/CD (GitHub Actions)
+
+| Workflow | When | What |
+|----------|------|------|
+| **`pr-check.yml`** | PR to `main` touching `coder-templates/**` | `terraform fmt -check`, `init`, `validate`; posts a comment on the PR |
+| **`deploy-template.yml`** | Push to `main` touching `coder-templates/**` | Installs Coder CLI, logs in, runs `coder templates push docker-dev` |
+
+**Repository secrets** (Settings → Secrets and variables → Actions):
+
+| Secret | Purpose |
+|--------|---------|
+| `CODER_URL` | Your Coder deployment URL (must be reachable from GitHub runners, e.g. a public or tunneled URL) |
+| `CODER_TOKEN` | API token from `coder tokens create github-actions` (or similar) |
+
+PR checks do not need these secrets. Deploy fails until both are set.
+
+**Branch protection (optional):** On `main`, require PRs, require the **Validate Terraform** check, and require review before merge.

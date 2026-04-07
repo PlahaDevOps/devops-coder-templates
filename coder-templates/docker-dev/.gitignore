@@ -1,0 +1,13 @@
+.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfvars
+
+# Commit .terraform.lock.hcl for reproducible CI (providers pinned).
+
+# Secrets: use parent Coder/.env (see README). Legacy local file if present:
+coder-github.env
+.env
+
+# Optional local Docker Compose overrides
+docker-compose.override.yml

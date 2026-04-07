@@ -1,5 +1,17 @@
 # Never commit secrets
 .env
 
+# Local Coder server state (Docker volume bind)
+coder-data/
+
 # Optional local Compose overrides
 docker-compose.override.yml
+
+# Terraform (commit .terraform.lock.hcl for CI; ignore local plugin dir)
+.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfvars
+
+# Legacy local OAuth file (prefer root .env)
+coder-github.env

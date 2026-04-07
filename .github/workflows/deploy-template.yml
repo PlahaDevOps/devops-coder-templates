@@ -1,0 +1,32 @@
+# On push to main, push the docker-dev template to your Coder deployment (requires CODER_URL + CODER_TOKEN secrets).
+name: Deploy Coder Template
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "coder-templates/**"
+
+jobs:
+  deploy:
+    name: Deploy template to Coder
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Coder CLI
+        run: curl -fsSL https://coder.com/install.sh | sh
+
+      - name: Login and push template
+        env:
+          CODER_URL: ${{ secrets.CODER_URL }}
+          CODER_TOKEN: ${{ secrets.CODER_TOKEN }}
+        run: |
+          export PATH="$PATH:$HOME/.local/bin:/usr/local/bin"
+          coder version
+          coder login "$CODER_URL" --token "$CODER_TOKEN"
+          coder templates push docker-dev \
+            --directory ./coder-templates/docker-dev \
+            --yes
