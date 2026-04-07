@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Never commit secrets
 .env
 
@@ -9,18 +8,10 @@ coder-data/
 docker-compose.override.yml
 
 # Terraform (commit .terraform.lock.hcl for CI; ignore local plugin dir)
-=======
->>>>>>> 1b577973ed8bf226ebc310a08be2ce6f76a82405
 .terraform/
 *.tfstate
 *.tfstate.backup
 *.tfvars
-<<<<<<< HEAD
 
 # Legacy local OAuth file (prefer root .env)
-=======
-.terraform.lock.hcl
-
-# Local Coder GitHub OAuth secrets (copy from coder-github.env.example)
->>>>>>> 1b577973ed8bf226ebc310a08be2ce6f76a82405
 coder-github.env
