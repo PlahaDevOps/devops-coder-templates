@@ -3,3 +3,6 @@
 *.tfstate.backup
 *.tfvars
 .terraform.lock.hcl
+
+# Local Coder GitHub OAuth secrets (copy from coder-github.env.example)
+coder-github.env
