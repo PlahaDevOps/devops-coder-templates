@@ -56,3 +56,14 @@ This repository’s workflows use `runs-on: self-hosted` (see `.github/workflows
 - **PR Checks** can stay on `ubuntu-latest` if you prefer not to leave your PC online for every PR; **Deploy** benefits most from self-hosted when `CODER_URL` is local. To do that, set `runs-on: ubuntu-latest` only in `.github/workflows/pr-check.yml` and leave `deploy-template.yml` on `self-hosted`.
 - Keep the runner machine **on** and **network-available** when Actions should run.
 - Install **Terraform** is handled by `hashicorp/setup-terraform` in the workflow; **Git** is usually present on developer machines—install [Git for Windows](https://git-scm.com/download/win) if checkout fails.
+
+## Troubleshooting: workflow fails or never starts
+
+| Symptom | What to check |
+|--------|----------------|
+| Job **Queued** for a long time | No **idle** runner for this repo. **Settings → Actions → Runners** — runner must be **Idle** (green), registered under **this repository** (not only org-level unless you use org runners). Start `run.cmd` or the **Actions Runner** Windows service. |
+| Job **fails in ~30–60s** | A runner ran the job. Open the run → expand the failed step. Common issues: **`pwsh` missing** (workflows in this repo use **`powershell`**), **Git missing**, **Coder CLI download blocked**, **`coder login`** failed (wrong **`CODER_URL`** / **`CODER_TOKEN`** / RBAC). |
+| **Merge PR** blocked | Branch protection may require passing checks. If **PR Checks** or **Deploy** fail, fix workflows or relax rules. Merging to `main` still works if you have permission and bypass (not recommended without fixing the runner). |
+| **`CODER_URL` is `http://localhost:3000`** | The runner process must run **on the same Windows machine** where Coder (Docker) listens on **port 3000**. |
+
+After fixing the runner, **Re-run failed jobs** on the last workflow run (no new commit required).

@@ -19,11 +19,19 @@ jobs:
 
     defaults:
       run:
-        shell: pwsh
+        # Use Windows PowerShell 5.1+ (built in). Some machines lack `pwsh` (PowerShell 7).
+        shell: powershell
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Runner diagnostics
+        run: |
+          Write-Host "Runner name: $env:RUNNER_NAME"
+          Write-Host "Runner OS: $env:RUNNER_OS"
+          Write-Host "PSVersion:" $PSVersionTable.PSVersion
+          git --version
 
       - name: Install Coder CLI (Windows zip from GitHub releases)
         run: |
