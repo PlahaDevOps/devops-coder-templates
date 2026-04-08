@@ -43,16 +43,16 @@ jobs:
           if ($cmd) {
             $first = (coder version 2>&1 | Select-Object -First 1) -as [string]
             if ($first -match [regex]::Escape($ver)) {
-              Write-Host "Coder CLI $ver already available at $($cmd.Source) — skipping download."
+              Write-Host ('Coder CLI {0} already available at {1} - skipping download.' -f $ver, $cmd.Source)
               exit 0
             }
-            Write-Host "Found coder but version line does not match $ver : $first"
+            Write-Host ('Found coder but version line does not match {0} : {1}' -f $ver, $first)
           }
-          $dest = Join-Path $env:RUNNER_TEMP "coder-cli-$ver"
+          $dest = Join-Path $env:RUNNER_TEMP ('coder-cli-{0}' -f $ver)
           New-Item -ItemType Directory -Force -Path $dest | Out-Null
-          $zip = Join-Path $env:RUNNER_TEMP "coder_windows_$ver.zip"
-          $url = "https://github.com/coder/coder/releases/download/v$ver/coder_${ver}_windows_amd64.zip"
-          Write-Host "Downloading $url"
+          $zip = Join-Path $env:RUNNER_TEMP ('coder_windows_{0}.zip' -f $ver)
+          $url = ('https://github.com/coder/coder/releases/download/v{0}/coder_{0}_windows_amd64.zip' -f $ver)
+          Write-Host ('Downloading {0}' -f $url)
           Invoke-WebRequest -Uri $url -OutFile $zip -UseBasicParsing
           Expand-Archive -Path $zip -DestinationPath $dest -Force
           Add-Content $env:GITHUB_PATH $dest
