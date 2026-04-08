@@ -112,7 +112,7 @@ Do these in order; skip a step only if you already know it is done.
 4. **Create a new long-lived API token as that user** — On your PC, log in to **that same** user and deployment:
    ```powershell
    coder login https://YOUR_CODER_URL
-   coder tokens create github-actions --lifetime 8760h
+   coder tokens create --name github-actions --lifetime 8760h
    ```
    Use default **`all`** scope unless you have a documented minimal scope set that includes template create/update. **Do not** use a short session token for Actions.
 
@@ -161,7 +161,7 @@ docker compose up -d --force-recreate
 | Secret | Value |
 |--------|--------|
 | `CODER_URL` | Same base URL as **`CODER_ACCESS_URL`** (e.g. `https://abc-xyz.ngrok-free.app`) |
-| `CODER_TOKEN` | `coder tokens create github-actions` after `coder login` to that URL |
+| `CODER_TOKEN` | `coder tokens create --name github-actions --lifetime …` after `coder login` to that URL |
 
 **Operational notes**
 
