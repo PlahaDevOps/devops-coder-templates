@@ -43,6 +43,30 @@ jobs:
         id: validate
         run: terraform validate
 
+      - name: tfsec Security Scan
+        id: tfsec
+        run: |
+          $ErrorActionPreference = "Stop"
+          $url = "https://github.com/aquasecurity/tfsec/releases/latest/download/tfsec-windows-amd64.exe"
+          Invoke-WebRequest -Uri $url -OutFile "$env:RUNNER_TEMP\tfsec.exe" -UseBasicParsing
+          & "$env:RUNNER_TEMP\tfsec.exe" . --soft-fail --format markdown
+        continue-on-error: true
+
+      - name: Comment tfsec Results
+        uses: actions/github-script@v7
+        if: always() && github.event_name == 'pull_request'
+        env:
+          TFSEC_OUTCOME: ${{ steps.tfsec.outcome }}
+        with:
+          script: |
+            const tfsec = process.env.TFSEC_OUTCOME;
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `## 🔐 Security Scan (tfsec)\n\n${tfsec === 'success' ? '✅ No security issues found!' : '⚠️ Security issues detected — check logs'}`,
+            });
+
       - name: Comment PR
         uses: actions/github-script@v7
         if: always() && github.event_name == 'pull_request'

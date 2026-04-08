@@ -1,0 +1,17 @@
+version: 2
+updates:
+  - package-ecosystem: "terraform"
+    directory: "/coder-templates/docker-dev"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "terraform"
+
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "docker"
