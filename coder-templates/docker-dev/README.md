@@ -25,7 +25,7 @@ DevOps_work/Coder/
         └── docker-dev/    ← this Terraform template
 ```
 
-1. Copy `../.env.example` to `../.env` and set `GITHUB_CLIENT_ID` and `GITHUB_CLIENT_SECRET` from your GitHub OAuth app.
+1. Copy `../.env.example` to `../.env` and set **`GITHUB_CLIENT_*`** (OAuth app “Coder Local”, sign-in) and **`GITHUB_EXTERNAL_*`** (OAuth app “Coder Local External”, Git) — see comments in `.env.example` for callback URLs.
 2. **Authorization callback URL:** `http://localhost:3000/api/v2/users/oauth2/github/callback`
 3. From **`DevOps_work/Coder`**, run:
 
@@ -36,6 +36,10 @@ docker compose up -d
 4. Verify: **http://localhost:3000/deployment/userauth**
 
 Day-to-day commands (start, stop, restart, logs, recreating after config edits): see **`../README.md`** in the **Coder** folder.
+
+### Workspace build: `Error pinging Docker` / `docker_volume` / Terraform exit 1
+
+The Coder **server** talks to Docker over **TCP** (`DOCKER_HOST`, default `tcp://host.docker.internal:2375`). In Docker Desktop, enable **Expose daemon on tcp://localhost:2375** (see **`../.env.example`**). Ensure **`coder templates push`** is run after changing `main.tf` so the server uses the template without a hardcoded unix socket.
 
 ## CI
 

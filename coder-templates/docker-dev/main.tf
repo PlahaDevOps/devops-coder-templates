@@ -11,7 +11,7 @@ terraform {
 
 provider "coder" {}
 provider "docker" {
-  host = "unix:///var/run/docker.sock"
+  host = "tcp://host.docker.internal:2375"
 }
 
 data "coder_provisioner" "me" {}
