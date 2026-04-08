@@ -26,10 +26,24 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: 1.14.8
+      # Native download: hashicorp/setup-terraform often throws AggregateError on Windows
+      # self-hosted runners (Node fetch / TLS / proxy). Same pattern as Coder CLI in deploy-template.yml.
+      - name: Install Terraform
+        shell: powershell
+        working-directory: ${{ github.workspace }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $version = '1.14.8'
+          $zipName = "terraform_${version}_windows_amd64.zip"
+          $baseUrl = "https://releases.hashicorp.com/terraform/${version}"
+          $dest = Join-Path $env:RUNNER_TEMP "terraform-$version"
+          $bin = Join-Path $dest 'bin'
+          New-Item -ItemType Directory -Force -Path $bin | Out-Null
+          $zipPath = Join-Path $dest $zipName
+          Invoke-WebRequest -Uri "$baseUrl/$zipName" -OutFile $zipPath -UseBasicParsing
+          Expand-Archive -LiteralPath $zipPath -DestinationPath $bin -Force
+          Add-Content -Path $env:GITHUB_PATH -Value $bin
+          terraform version
 
       - name: Terraform Format Check
         id: fmt
