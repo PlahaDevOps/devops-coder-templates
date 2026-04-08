@@ -1,4 +1,4 @@
-# Runs on PRs to main when coder-templates change: terraform fmt + validate, comment on PR.
+# Runs on PRs to main when templates or these CI files change: terraform fmt + validate, tfsec, comments.
 name: PR Checks
 
 on:
@@ -6,6 +6,8 @@ on:
     branches: [main]
     paths:
       - "coder-templates/**"
+      - ".github/workflows/**"
+      - ".github/labeler.yml"
 
 permissions:
   contents: read
