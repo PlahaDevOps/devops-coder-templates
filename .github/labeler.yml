@@ -1,0 +1,19 @@
+terraform:
+  - changed-files:
+      - any-glob-to-any-file: "coder-templates/**/*.tf"
+
+ci:
+  - changed-files:
+      - any-glob-to-any-file: ".github/workflows/**"
+
+docs:
+  - changed-files:
+      - any-glob-to-any-file: "**/*.md"
+
+docker:
+  - changed-files:
+      - any-glob-to-any-file: "docker-compose.yml"
+
+dependencies:
+  - changed-files:
+      - any-glob-to-any-file: ".github/dependabot.yml"
