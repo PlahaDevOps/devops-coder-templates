@@ -22,7 +22,7 @@ From **`Coder`** (this folder):
 ```powershell
 cd C:\Users\admin\Desktop\DevOps_work\Coder
 copy .env.example .env
-# Edit .env: GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET
+# Edit .env: GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET, and DOCKER_GROUP (see .env.example — needed for Docker workspaces / Terraform)
 docker compose up -d
 ```
 
@@ -91,9 +91,11 @@ See **`coder-templates/docker-dev/README.md`** for the Terraform template and `c
 | Secret | Purpose |
 |--------|---------|
 | `CODER_URL` | Your Coder deployment URL (must be reachable from GitHub runners, e.g. a public or tunneled URL) |
-| `CODER_TOKEN` | API token from `coder tokens create github-actions` (or similar) |
+| `CODER_TOKEN` | Long-lived API token from a user who can **create template versions** (see below) |
 
 PR checks do not need these secrets. Deploy fails until both are set.
+
+**`CODER_TOKEN` must belong to a privileged user.** Pushing a template runs `coder templates push`, which creates a new template version. If login succeeds but the job fails with **`insert template version: unauthorized: rbac: forbidden`**, the token’s user lacks RBAC permission (often **Member**). In Coder: **Administration → Users** → your automation user → assign **Template Admin** (or **Owner**), then create a new token (`coder tokens create` with default **`all`** scope, or scopes that include **`template:*`** / create+update for templates). Replace the **`CODER_TOKEN`** secret and re-run the workflow.
 
 **Branch protection (optional):** On `main`, require PRs, require the **Validate Terraform** check, and require review before merge.
 
@@ -140,3 +142,23 @@ docker compose up -d --force-recreate
 
 - The **deploy** job only succeeds if your tunnel is **up** when the workflow runs (PC on, Docker running, ngrok container or CLI running).
 - A **reserved** ngrok domain stays the same across restarts; ephemeral URLs change each time — then update **`.env`**, OAuth, and **`CODER_URL`**.
+
+### Session log & CI annotations (pick up next session)
+
+**Repo / git (done)**
+
+- Merged local work with `origin/main` using unrelated histories; cleaned leftover merge conflict markers in root **`README.md`** and **`.gitignore`**, then pushed.
+- **`main`** and **`coder-docker-root`** were brought in sync (same tree on GitHub; nothing left to compare for a merge-only PR).
+- **`chore/test-github-workflows`** branch: small doc change under **`coder-templates/docker-dev`** to open a PR and exercise **PR Checks** (`terraform fmt -check`, `init`, `validate`, PR comment).
+
+**GitHub Actions — last run observations**
+
+| Kind | Detail |
+|------|--------|
+| **Error (resolved cause)** | **Deploy template to Coder** failed with **`insert template version: unauthorized: rbac: forbidden`** after successful login. This is **not** a bad URL or dead tunnel — the API token authenticates but the user **cannot create template versions**. Fix: grant **Template Admin** (or **Owner**) to the user that owns **`CODER_TOKEN`**, recreate the token if needed (full **`all`** scope or **`template:*`**), update the GitHub secret, re-run. |
+| **Warning** | **Node.js 20 deprecation:** `actions/checkout@v4` (and other actions) still run on Node 20; runners will default to **Node 24** from **2026-06-02**; Node 20 removed **2026-09-16**. See [GitHub changelog](https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/). Mitigation: use newer action versions that support Node 24 when available, or set `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true` in the workflow to opt in early. |
+
+**Follow-up**
+
+- After RBAC fix: confirm deploy green on **`main`** (tunnel up if **`CODER_URL`** is not public).
+- Optionally bump **`actions/checkout`** (and pin workflow env for Node 24 if needed).

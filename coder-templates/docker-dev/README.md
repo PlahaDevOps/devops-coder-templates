@@ -40,3 +40,5 @@ Day-to-day commands (start, stop, restart, logs, recreating after config edits):
 ## CI
 
 Pull requests that change files under `coder-templates/` run **Terraform format check** and **`terraform validate`** (see `.github/workflows/pr-check.yml`). Merging to `main` can run **template deploy** if `CODER_URL` and `CODER_TOKEN` are set in repository secrets.
+
+For a dated session log (merge history, PR test branch, deploy failure exit code 1, Node 20 deprecation warning), see **`../README.md`** → **Session log & CI annotations**.
