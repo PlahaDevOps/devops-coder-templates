@@ -5,8 +5,7 @@
 
 # Commit .terraform.lock.hcl for reproducible CI (providers pinned).
 
-# Secrets: use parent Coder/.env (see README). Legacy local file if present:
-coder-github.env
+# Secrets: use parent Coder/.env (see README).
 .env
 
 # Optional local Docker Compose overrides
