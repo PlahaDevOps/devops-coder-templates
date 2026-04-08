@@ -81,6 +81,8 @@ See **`coder-templates/docker-dev/README.md`** for the Terraform template and `c
 
 ## CI/CD (GitHub Actions)
 
+Workflows use **`runs-on: self-hosted`** (Windows runner on your machine). Install and register the runner using **`.github/self-hosted-runner.md`**. Set GitHub secrets **`CODER_URL`** / **`CODER_TOKEN`** as before; for a local Coder server, **`CODER_URL`** can be `http://localhost:3000` when the job runs on the same PC as Docker.
+
 | Workflow | When | What |
 |----------|------|------|
 | **`pr-check.yml`** | PR to `main` touching `coder-templates/**` | `terraform fmt -check`, `init`, `validate`; posts a comment on the PR |
@@ -95,7 +97,30 @@ See **`coder-templates/docker-dev/README.md`** for the Terraform template and `c
 
 PR checks do not need these secrets. Deploy fails until both are set.
 
-**`CODER_TOKEN` must belong to a privileged user.** Pushing a template runs `coder templates push`, which creates a new template version. If login succeeds but the job fails with **`insert template version: unauthorized: rbac: forbidden`**, the token’s user lacks RBAC permission (often **Member**). In Coder: **Administration → Users** → your automation user → assign **Template Admin** (or **Owner**), then create a new token (`coder tokens create` with default **`all`** scope, or scopes that include **`template:*`** / create+update for templates). Replace the **`CODER_TOKEN`** secret and re-run the workflow.
+**`CODER_TOKEN` must belong to a privileged user.** Pushing a template runs `coder templates push`, which creates a new template version. If login succeeds but the job fails with **`insert template version: unauthorized: rbac: forbidden`**, the token’s user lacks RBAC permission (often **Member**).
+
+### Fix `rbac: forbidden` on deploy (step-by-step)
+
+Do these in order; skip a step only if you already know it is done.
+
+1. **Pick the GitHub Actions user** — Decide which Coder account will own the token (e.g. your **`admin`** user or a dedicated **`github-actions`** user). You must be able to sign in as an **Owner** to change roles.
+
+2. **Grant a site role that can push templates** — As **Owner**, open **Administration → Users** → select that user → assign **Template Admin** or **Owner**. **Member** is not enough to create template versions.
+
+3. **Confirm `CODER_URL` in GitHub** — Repo → **Settings → Secrets and variables → Actions** → **`CODER_URL`** must be the **same base URL** as **`CODER_ACCESS_URL`** in your Coder server (e.g. `https://your-ngrok-host.ngrok-free.dev`, no trailing slash). GitHub’s runners must reach this URL when the workflow runs (tunnel up if you use ngrok).
+
+4. **Create a new long-lived API token as that user** — On your PC, log in to **that same** user and deployment:
+   ```powershell
+   coder login https://YOUR_CODER_URL
+   coder tokens create --name github-actions --lifetime 8760h
+   ```
+   Use default **`all`** scope unless you have a documented minimal scope set that includes template create/update. **Do not** use a short session token for Actions.
+
+5. **Update the `CODER_TOKEN` secret** — In the same GitHub **Actions** secrets page, paste the new token into **`CODER_TOKEN`** (replace the old value entirely).
+
+6. **Re-run the workflow** — **Actions** → **Deploy Coder Template** → open the failed run → **Re-run failed jobs** (or push a tiny commit to `main` under `coder-templates/**`).
+
+7. **If it still fails** — In Coder, confirm the user from step 2 really shows **Template Admin** / **Owner**. Locally run `coder login` + `coder templates push docker-dev --directory ./coder-templates/docker-dev --yes` with the same token; if that fails, the problem is still role/token, not GitHub.
 
 **Branch protection (optional):** On `main`, require PRs, require the **Validate Terraform** check, and require review before merge.
 
@@ -136,12 +161,29 @@ docker compose up -d --force-recreate
 | Secret | Value |
 |--------|--------|
 | `CODER_URL` | Same base URL as **`CODER_ACCESS_URL`** (e.g. `https://abc-xyz.ngrok-free.app`) |
-| `CODER_TOKEN` | `coder tokens create github-actions` after `coder login` to that URL |
+| `CODER_TOKEN` | `coder tokens create --name github-actions --lifetime …` after `coder login` to that URL |
 
 **Operational notes**
 
 - The **deploy** job only succeeds if your tunnel is **up** when the workflow runs (PC on, Docker running, ngrok container or CLI running).
 - A **reserved** ngrok domain stays the same across restarts; ephemeral URLs change each time — then update **`.env`**, OAuth, and **`CODER_URL`**.
+
+### ngrok free tier: browser warning vs API clients
+
+Browsers may see an **interstitial** (“Visit Site”); after you click through, the app loads and the ngrok dashboard can show **200 OK**. That does **not** guarantee **non-browser** clients work: **`coder`**, **`curl`**, and **GitHub Actions** talk to the **same public URL** and may receive the **HTML warning page** instead of JSON unless the **client** sends the header **`ngrok-skip-browser-warning`** (any value). Coder’s CLI does not automatically add that header.
+
+Adding a header only on the tunnel → **Coder** hop (e.g. deprecated `ngrok http --request-header-add`, or traffic policy toward the upstream) does **not** satisfy ngrok’s edge check — the warning is applied **before** traffic reaches your tunnel.
+
+**Practical options for automation (`coder login`, `coder templates push`, Actions deploy):**
+
+- Use a **stable public URL without that interstitial** (e.g. **ngrok paid** / **ngrok Edge** rules your account allows, **Cloudflare Tunnel**, or a small **VPS + DNS**).
+- Keep **ngrok free** for human browser use only; run **template push** from a network path that works (e.g. local `coder login http://localhost:3000` if you use direct port access, or a hostname that does not inject the warning).
+
+**Sanity check from any machine** (should return HTTP **200** and a small response, not HTML for a human):
+
+```bash
+curl -sS -o /dev/null -w "%{http_code}\n" -H "ngrok-skip-browser-warning: any" "https://YOUR_HOST/healthz"
+```
 
 ### Session log & CI annotations (pick up next session)
 
