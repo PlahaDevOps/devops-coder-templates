@@ -8,9 +8,12 @@ services:
     image: ngrok/ngrok:latest
     container_name: ngrok
     restart: unless-stopped
+    # ngrok v3: use --url (not deprecated --domain). Hostname-only NGROK_DOMAIN → full https URL.
+    # Note: free-tier browser warning is decided at ngrok’s edge; you cannot fix CLI/API clients by
+    # adding headers only on the tunnel → Coder hop — see README “ngrok free tier”.
     command:
       - http
-      - --domain=${NGROK_DOMAIN}
+      - --url=https://${NGROK_DOMAIN}
       - coder:3000
     environment:
       NGROK_AUTHTOKEN: "${NGROK_AUTH_TOKEN}"

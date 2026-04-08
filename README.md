@@ -166,6 +166,23 @@ docker compose up -d --force-recreate
 - The **deploy** job only succeeds if your tunnel is **up** when the workflow runs (PC on, Docker running, ngrok container or CLI running).
 - A **reserved** ngrok domain stays the same across restarts; ephemeral URLs change each time — then update **`.env`**, OAuth, and **`CODER_URL`**.
 
+### ngrok free tier: browser warning vs API clients
+
+Browsers may see an **interstitial** (“Visit Site”); after you click through, the app loads and the ngrok dashboard can show **200 OK**. That does **not** guarantee **non-browser** clients work: **`coder`**, **`curl`**, and **GitHub Actions** talk to the **same public URL** and may receive the **HTML warning page** instead of JSON unless the **client** sends the header **`ngrok-skip-browser-warning`** (any value). Coder’s CLI does not automatically add that header.
+
+Adding a header only on the tunnel → **Coder** hop (e.g. deprecated `ngrok http --request-header-add`, or traffic policy toward the upstream) does **not** satisfy ngrok’s edge check — the warning is applied **before** traffic reaches your tunnel.
+
+**Practical options for automation (`coder login`, `coder templates push`, Actions deploy):**
+
+- Use a **stable public URL without that interstitial** (e.g. **ngrok paid** / **ngrok Edge** rules your account allows, **Cloudflare Tunnel**, or a small **VPS + DNS**).
+- Keep **ngrok free** for human browser use only; run **template push** from a network path that works (e.g. local `coder login http://localhost:3000` if you use direct port access, or a hostname that does not inject the warning).
+
+**Sanity check from any machine** (should return HTTP **200** and a small response, not HTML for a human):
+
+```bash
+curl -sS -o /dev/null -w "%{http_code}\n" -H "ngrok-skip-browser-warning: any" "https://YOUR_HOST/healthz"
+```
+
 ### Session log & CI annotations (pick up next session)
 
 **Repo / git (done)**
