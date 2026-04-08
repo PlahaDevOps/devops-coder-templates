@@ -81,6 +81,8 @@ See **`coder-templates/docker-dev/README.md`** for the Terraform template and `c
 
 ## CI/CD (GitHub Actions)
 
+Workflows use **`runs-on: self-hosted`** (Windows runner on your machine). Install and register the runner using **`.github/self-hosted-runner.md`**. Set GitHub secrets **`CODER_URL`** / **`CODER_TOKEN`** as before; for a local Coder server, **`CODER_URL`** can be `http://localhost:3000` when the job runs on the same PC as Docker.
+
 | Workflow | When | What |
 |----------|------|------|
 | **`pr-check.yml`** | PR to `main` touching `coder-templates/**` | `terraform fmt -check`, `init`, `validate`; posts a comment on the PR |

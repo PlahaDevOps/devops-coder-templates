@@ -1,4 +1,5 @@
 # On push to main, push the docker-dev template to your Coder deployment (requires CODER_URL + CODER_TOKEN secrets).
+# Self-hosted runner: use a Windows machine on your network so CODER_URL can be localhost/LAN (see .github/self-hosted-runner.md).
 name: Deploy Coder Template
 
 on:
@@ -7,26 +8,42 @@ on:
     paths:
       - "coder-templates/**"
 
+env:
+  # Pin CLI major line to your Coder server; bump when you upgrade the server.
+  CODER_CLI_VERSION: "2.31.7"
+
 jobs:
   deploy:
     name: Deploy template to Coder
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
+
+    defaults:
+      run:
+        shell: pwsh
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install Coder CLI
-        run: curl -fsSL https://coder.com/install.sh | sh
+      - name: Install Coder CLI (Windows zip from GitHub releases)
+        run: |
+          $ErrorActionPreference = "Stop"
+          $ver = $env:CODER_CLI_VERSION
+          $dest = Join-Path $env:RUNNER_TEMP "coder-cli"
+          New-Item -ItemType Directory -Force -Path $dest | Out-Null
+          $zip = Join-Path $env:RUNNER_TEMP "coder_windows.zip"
+          $url = "https://github.com/coder/coder/releases/download/v$ver/coder_${ver}_windows_amd64.zip"
+          Invoke-WebRequest -Uri $url -OutFile $zip
+          Expand-Archive -Path $zip -DestinationPath $dest -Force
+          Add-Content $env:GITHUB_PATH $dest
 
       - name: Login and push template
         env:
           CODER_URL: ${{ secrets.CODER_URL }}
           CODER_TOKEN: ${{ secrets.CODER_TOKEN }}
         run: |
-          export PATH="$PATH:$HOME/.local/bin:/usr/local/bin"
           coder version
-          coder login "$CODER_URL" --token "$CODER_TOKEN"
-          coder templates push docker-dev \
-            --directory ./coder-templates/docker-dev \
+          coder login $env:CODER_URL --token $env:CODER_TOKEN
+          coder templates push docker-dev `
+            --directory ./coder-templates/docker-dev `
             --yes
