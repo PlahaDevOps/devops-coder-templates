@@ -22,7 +22,7 @@ From **`Coder`** (this folder):
 ```powershell
 cd C:\Users\admin\Desktop\DevOps_work\Coder
 copy .env.example .env
-# Edit .env: GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET
+# Edit .env: GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET, and DOCKER_GROUP (see .env.example — needed for Docker workspaces / Terraform)
 docker compose up -d
 ```
 

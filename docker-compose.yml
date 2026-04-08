@@ -25,7 +25,12 @@ services:
       - ngrok
     ports:
       - "3000:3000"
+    # Coder runs as non-root; without the host docker group, Terraform (provisioner) cannot use the socket.
+    # See https://coder.com/docs/install/docker — set DOCKER_GROUP in .env from: getent group docker | cut -d: -f3
+    group_add:
+      - "${DOCKER_GROUP:-999}"
     environment:
+      DOCKER_HOST: "unix:///var/run/docker.sock"
       CODER_ACCESS_URL: "${CODER_ACCESS_URL}"
       CODER_HTTP_ADDRESS: "0.0.0.0:3000"
       CODER_OAUTH2_GITHUB_CLIENT_ID: "${GITHUB_CLIENT_ID}"
