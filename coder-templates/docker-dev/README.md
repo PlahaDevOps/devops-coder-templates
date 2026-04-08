@@ -43,6 +43,4 @@ The Coder **server** talks to Docker over **TCP** (`DOCKER_HOST`, default `tcp:/
 
 ## CI
 
-Pull requests that change files under `coder-templates/` run **Terraform format check** and **`terraform validate`** (see `.github/workflows/pr-check.yml`). Merging to `main` can run **template deploy** if `CODER_URL` and `CODER_TOKEN` are set in repository secrets.
-
-For a dated session log (merge history, PR test branch, deploy failure exit code 1, Node 20 deprecation warning), see **`../README.md`** → **Session log & CI annotations**.
+Every PR targeting **`main`** runs **Terraform format check** and **`terraform validate`** (see `.github/workflows/pr-check.yml`). Pushes to **`main`** that change **`coder-templates/**`** run **template deploy** when `CODER_URL` and `CODER_TOKEN` are set. Details: **`../README.md`**.
