@@ -19,7 +19,7 @@ jobs:
 
     defaults:
       run:
-        shell: pwsh
+        shell: powershell
         working-directory: ./coder-templates/docker-dev
 
     steps:
