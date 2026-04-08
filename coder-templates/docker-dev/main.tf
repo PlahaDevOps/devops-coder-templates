@@ -101,3 +101,5 @@ resource "docker_container" "workspace" {
 resource "docker_volume" "home" {
   name = "coder-${data.coder_workspace_owner.me.name}-${data.coder_workspace.me.name}-home"
 }
+
+# PR: exercise self-hosted PR Checks workflow
