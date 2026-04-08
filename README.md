@@ -95,7 +95,30 @@ See **`coder-templates/docker-dev/README.md`** for the Terraform template and `c
 
 PR checks do not need these secrets. Deploy fails until both are set.
 
-**`CODER_TOKEN` must belong to a privileged user.** Pushing a template runs `coder templates push`, which creates a new template version. If login succeeds but the job fails with **`insert template version: unauthorized: rbac: forbidden`**, the token’s user lacks RBAC permission (often **Member**). In Coder: **Administration → Users** → your automation user → assign **Template Admin** (or **Owner**), then create a new token (`coder tokens create` with default **`all`** scope, or scopes that include **`template:*`** / create+update for templates). Replace the **`CODER_TOKEN`** secret and re-run the workflow.
+**`CODER_TOKEN` must belong to a privileged user.** Pushing a template runs `coder templates push`, which creates a new template version. If login succeeds but the job fails with **`insert template version: unauthorized: rbac: forbidden`**, the token’s user lacks RBAC permission (often **Member**).
+
+### Fix `rbac: forbidden` on deploy (step-by-step)
+
+Do these in order; skip a step only if you already know it is done.
+
+1. **Pick the GitHub Actions user** — Decide which Coder account will own the token (e.g. your **`admin`** user or a dedicated **`github-actions`** user). You must be able to sign in as an **Owner** to change roles.
+
+2. **Grant a site role that can push templates** — As **Owner**, open **Administration → Users** → select that user → assign **Template Admin** or **Owner**. **Member** is not enough to create template versions.
+
+3. **Confirm `CODER_URL` in GitHub** — Repo → **Settings → Secrets and variables → Actions** → **`CODER_URL`** must be the **same base URL** as **`CODER_ACCESS_URL`** in your Coder server (e.g. `https://your-ngrok-host.ngrok-free.dev`, no trailing slash). GitHub’s runners must reach this URL when the workflow runs (tunnel up if you use ngrok).
+
+4. **Create a new long-lived API token as that user** — On your PC, log in to **that same** user and deployment:
+   ```powershell
+   coder login https://YOUR_CODER_URL
+   coder tokens create github-actions --lifetime 8760h
+   ```
+   Use default **`all`** scope unless you have a documented minimal scope set that includes template create/update. **Do not** use a short session token for Actions.
+
+5. **Update the `CODER_TOKEN` secret** — In the same GitHub **Actions** secrets page, paste the new token into **`CODER_TOKEN`** (replace the old value entirely).
+
+6. **Re-run the workflow** — **Actions** → **Deploy Coder Template** → open the failed run → **Re-run failed jobs** (or push a tiny commit to `main` under `coder-templates/**`).
+
+7. **If it still fails** — In Coder, confirm the user from step 2 really shows **Template Admin** / **Owner**. Locally run `coder login` + `coder templates push docker-dev --directory ./coder-templates/docker-dev --yes` with the same token; if that fails, the problem is still role/token, not GitHub.
 
 **Branch protection (optional):** On `main`, require PRs, require the **Validate Terraform** check, and require review before merge.
 
