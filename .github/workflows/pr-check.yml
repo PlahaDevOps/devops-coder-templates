@@ -1,13 +1,10 @@
-# Runs on PRs to main when templates or these CI files change: terraform fmt + validate, tfsec, comments.
+# Runs on every PR targeting main (no paths filter — otherwise PRs that only touch README/docker-compose/etc. skip checks).
 name: PR Checks
 
 on:
   pull_request:
     branches: [main]
-    paths:
-      - "coder-templates/**"
-      - ".github/workflows/**"
-      - ".github/labeler.yml"
+  workflow_dispatch:
 
 permissions:
   contents: read
