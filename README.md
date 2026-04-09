@@ -15,10 +15,11 @@ Coder/
   │     ├── dependabot.yml              ← Dependency updates
   │     └── self-hosted-runner.md       ← Runner setup
   ├── coder-templates/
-  │     └── docker-dev/                 ← Workspace template
-  │           ├── main.tf
-  │           ├── .terraform.lock.hcl
-  │           └── README.md
+  │     ├── docker-dev/                 ← Docker workspace template
+  │     │     ├── main.tf
+  │     │     ├── .terraform.lock.hcl
+  │     │     └── README.md
+  │     └── k8s-dev/                   ← Kubernetes workspace template (split .tf files)
   ├── docker-compose.yml                ← Coder + ngrok
   ├── .env                              ← Secrets (gitignored)
   ├── .env.example
@@ -89,8 +90,8 @@ Uses a **self-hosted Windows runner**. Install and register it using **`.github/
 
 | Workflow | When | What |
 |----------|------|------|
-| `pr-check.yml` | Every **PR to `main`** | `terraform fmt -check`, `init`, `validate`, **tfsec** (soft-fail), PR comments |
-| `deploy-template.yml` | **Push to `main`** changing files under **`coder-templates/**`** | `coder templates push` for `docker-dev` |
+| `pr-check.yml` | Every **PR to `main`** | Same checks for **`coder-templates/docker-dev`** and **`coder-templates/k8s-dev`** (matrix); PR comments |
+| `deploy-template.yml` | **Push to `main`** changing files under **`coder-templates/**`** | `coder templates push` for **`docker-dev`** and **`k8s-dev`** |
 | `labeler.yml` | PR **opened**, **synchronize**, **reopened** | Labels from `.github/labeler.yml` |
 
 ### GitHub secrets (deploy)

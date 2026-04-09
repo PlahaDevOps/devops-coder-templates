@@ -22,7 +22,7 @@ services:
     image: ghcr.io/coder/coder:latest
     container_name: coder
     restart: unless-stopped
-    # Docker API via TCP (no docker.sock mount). Enable Docker Desktop → "Expose daemon on tcp://localhost:2375".
+    # Docker: host socket mounted below. (docker-dev Terraform still uses tcp://host.docker.internal:2375 — keep TCP enabled in Docker Desktop.)
     privileged: true
     depends_on:
       - ngrok
@@ -31,7 +31,6 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     environment:
-      DOCKER_HOST: "${DOCKER_HOST:-tcp://host.docker.internal:2375}"
       CODER_ACCESS_URL: "${CODER_ACCESS_URL}"
       CODER_HTTP_ADDRESS: "0.0.0.0:3000"
       # GitHub OAuth app "Coder Local" — sign-in (callback …/api/v2/users/oauth2/github/callback)
@@ -47,7 +46,6 @@ services:
       CODER_EXTERNAL_AUTH_0_DISPLAY_NAME: "GitHub"
       CODER_EXTERNAL_AUTH_0_SCOPES: "repo read:org"
     volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
       - ./coder-data:/home/coder/.config
-      # Kubernetes template (coder-templates/k8s-dev): provisioner reads ~/.kube/config inside this container.
-      # Set KUBECONFIG_HOST_PATH in .env (see .env.example). Use forward slashes on Windows, e.g. C:/Users/you/.kube
-      - "${KUBECONFIG_HOST_PATH:-C:/Users/admin/.kube}:/home/coder/.kube:ro"
+      - C:/Users/admin/.kube:/home/coder/.kube:ro

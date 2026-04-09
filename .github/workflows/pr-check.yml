@@ -13,13 +13,17 @@ permissions:
 
 jobs:
   terraform-validate:
-    name: Validate Terraform
+    name: Validate Terraform (${{ matrix.template }})
     runs-on: self-hosted
+    strategy:
+      fail-fast: false
+      matrix:
+        template: [docker-dev, k8s-dev]
 
     defaults:
       run:
         shell: powershell
-        working-directory: ./coder-templates/docker-dev
+        working-directory: ./coder-templates/${{ matrix.template }}
 
     steps:
       - name: Checkout code
@@ -56,14 +60,16 @@ jobs:
         if: always() && github.event_name == 'pull_request'
         env:
           TFSEC_OUTCOME: ${{ steps.tfsec.outcome }}
+          TEMPLATE: ${{ matrix.template }}
         with:
           script: |
             const tfsec = process.env.TFSEC_OUTCOME;
+            const t = process.env.TEMPLATE;
             await github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: `## 🔐 Security Scan (tfsec)\n\n${tfsec === 'success' ? '✅ No security issues found!' : '⚠️ Security issues detected — check logs'}`,
+              body: `## 🔐 Security Scan (tfsec) — \`${t}\`\n\n${tfsec === 'success' ? '✅ No security issues found!' : '⚠️ Security issues detected — check logs'}`,
             });
 
       - name: Comment PR
@@ -73,15 +79,17 @@ jobs:
           FMT_OUTCOME: ${{ steps.fmt.outcome }}
           VALIDATE_OUTCOME: ${{ steps.validate.outcome }}
           INIT_OUTCOME: ${{ steps.init.outcome }}
+          TEMPLATE: ${{ matrix.template }}
         with:
           script: |
             const fmt = process.env.FMT_OUTCOME;
             const validate = process.env.VALIDATE_OUTCOME;
             const init = process.env.INIT_OUTCOME;
+            const t = process.env.TEMPLATE;
             const fmtOk = fmt === 'success';
             const valOk = validate === 'success';
             const initOk = init === 'success';
-            const body = `## Terraform PR check results
+            const body = `## Terraform PR check results — \`${t}\`
 
             | Check | Status |
             |-------|--------|
@@ -89,8 +97,8 @@ jobs:
             | Format (\`terraform fmt -check\`) | ${fmtOk ? 'Passed' : 'Needs formatting — run \`terraform fmt -recursive\` locally'} |
             | Validate | ${valOk ? 'Passed' : 'Failed'} |
 
-            ${!fmtOk ? '> Fix formatting before merge, or run `terraform fmt -recursive` in `coder-templates/docker-dev`.' : ''}
-            ${valOk && fmtOk && initOk ? '> All checks passed. Ready for review.' : ''}
+            ${!fmtOk ? '> Fix formatting before merge, or run `terraform fmt -recursive` in `coder-templates/' + t + '`.' : ''}
+            ${valOk && fmtOk && initOk ? '> All checks passed for this template. Ready for review.' : ''}
             `;
             await github.rest.issues.createComment({
               issue_number: context.issue.number,

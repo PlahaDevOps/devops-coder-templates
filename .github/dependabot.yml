@@ -8,6 +8,14 @@ updates:
       - "dependencies"
       - "terraform"
 
+  - package-ecosystem: "terraform"
+    directory: "/coder-templates/k8s-dev"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "terraform"
+
   - package-ecosystem: "docker"
     directory: "/"
     schedule:

@@ -1,4 +1,4 @@
-# On push to main, push the docker-dev template to your Coder deployment (requires CODER_URL + CODER_TOKEN secrets).
+# On push to main, push workspace templates to your Coder deployment (requires CODER_URL + CODER_TOKEN secrets).
 # Self-hosted runner: use a Windows machine on your network so CODER_URL can be localhost/LAN (see .github/self-hosted-runner.md).
 name: Deploy Coder Template
 
@@ -57,13 +57,22 @@ jobs:
           Expand-Archive -Path $zip -DestinationPath $dest -Force
           Add-Content $env:GITHUB_PATH $dest
 
-      - name: Login and push template
+      - name: Login to Coder
         env:
           CODER_URL: ${{ secrets.CODER_URL }}
           CODER_TOKEN: ${{ secrets.CODER_TOKEN }}
         run: |
           coder version
           coder login $env:CODER_URL --token $env:CODER_TOKEN
+
+      - name: Push docker-dev template
+        run: |
           coder templates push docker-dev `
             --directory ./coder-templates/docker-dev `
+            --yes
+
+      - name: Push k8s-dev template
+        run: |
+          coder templates push k8s-dev `
+            --directory ./coder-templates/k8s-dev `
             --yes
