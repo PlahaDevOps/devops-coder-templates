@@ -52,7 +52,7 @@ module "cursor" {
 module "vscode" {
   count    = data.coder_workspace.me.start_count > 0 ? (contains(local.chosen_profile.preconfigured_modules, "vscode") ? 1 : 0) : 0
   source   = "registry.coder.com/coder/vscode-desktop/coder"
-  version  = "1.2.0"
+  version  = "1.2.1"
   agent_id = coder_agent.main.id
   folder   = "/home/coder"
 }
