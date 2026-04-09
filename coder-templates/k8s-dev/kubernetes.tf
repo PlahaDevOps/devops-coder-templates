@@ -1,4 +1,4 @@
-# ── Persistent Storage ────────────────────────────────────────
+# â”€â”€ Persistent Storage â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 resource "kubernetes_persistent_volume_claim" "home" {
   metadata {
@@ -33,7 +33,7 @@ resource "kubernetes_persistent_volume_claim" "home" {
   }
 }
 
-# ── Kubernetes Pod ────────────────────────────────────────────
+# â”€â”€ Kubernetes Pod â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 resource "kubernetes_pod" "workspace" {
   count = data.coder_workspace.me.start_count

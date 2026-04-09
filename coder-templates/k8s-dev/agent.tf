@@ -3,7 +3,7 @@ resource "coder_agent" "main" {
   os   = "linux"
   dir  = "/home/coder"
 
-  # Git identity injected as env vars — same as Aven's pattern
+  # Git identity injected as env vars â€” same as Aven's pattern
   env = {
     GIT_AUTHOR_NAME     = local.git_author_name
     GIT_AUTHOR_EMAIL    = local.git_author_email
@@ -23,7 +23,7 @@ resource "coder_agent" "main" {
 
   startup_script = <<-EOT
     set -e
-    echo "🚀 Starting workspace setup..."
+    echo "ðŸš€ Starting workspace setup..."
 
     # Install base tools
     sudo apt-get update -q
@@ -38,10 +38,10 @@ resource "coder_agent" "main" {
     # Profile-specific startup addon
     ${local.chosen_profile.startup_script_addon}
 
-    echo "✅ Workspace ready!"
+    echo "âœ… Workspace ready!"
   EOT
 
-  # ── Agent Metadata (dashboard stats) ──────────────────────
+  # â”€â”€ Agent Metadata (dashboard stats) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   metadata {
     display_name = "CPU Usage"
@@ -104,7 +104,7 @@ resource "coder_agent" "main" {
   }
 }
 
-# ── Dotfiles Script ───────────────────────────────────────────
+# â”€â”€ Dotfiles Script â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 resource "coder_script" "dotfiles" {
   agent_id     = coder_agent.main.id
@@ -140,7 +140,7 @@ resource "coder_script" "dotfiles" {
   EOT
 }
 
-# ── Workspace Metadata (shown in Coder dashboard) ────────────
+# â”€â”€ Workspace Metadata (shown in Coder dashboard) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 resource "coder_metadata" "workspace_info" {
   count       = data.coder_workspace.me.start_count
