@@ -48,3 +48,6 @@ services:
       CODER_EXTERNAL_AUTH_0_SCOPES: "repo read:org"
     volumes:
       - ./coder-data:/home/coder/.config
+      # Kubernetes template (coder-templates/k8s-dev): provisioner reads ~/.kube/config inside this container.
+      # Set KUBECONFIG_HOST_PATH in .env (see .env.example). Use forward slashes on Windows, e.g. C:/Users/you/.kube
+      - "${KUBECONFIG_HOST_PATH:-C:/Users/admin/.kube}:/home/coder/.kube:ro"
