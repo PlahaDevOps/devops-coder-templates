@@ -1,0 +1,4 @@
+# Terraform and provisioner scripts run on Linux agents; CRLF breaks bash (e.g. $'\r': command not found).
+* text=auto
+*.tf text eol=lf
+*.tfvars text eol=lf
