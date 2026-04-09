@@ -2,11 +2,11 @@ locals {
   namespace       = "coder-workspaces"
   deployment_name = "coder-${lower(data.coder_workspace.me.id)}"
 
-  # Git config — uses full name if available, falls back to username
+  # Git config â€” uses full name if available, falls back to username
   git_author_name  = coalesce(data.coder_workspace_owner.me.full_name, data.coder_workspace_owner.me.name)
   git_author_email = data.coder_workspace_owner.me.email
 
-  # Workspace profiles — mirrors Aven's pattern but for local K8s
+  # Workspace profiles â€” mirrors Aven's pattern but for local K8s
   workspace_profiles = {
     standard = {
       name                  = "Standard"
@@ -40,7 +40,7 @@ locals {
       storage               = "20Gi"
       preconfigured_modules = ["vscode", "cursor", "jupyterlab"]
       startup_script_addon  = <<-EOT
-        echo "📊 Installing data science libraries..."
+        echo "ðŸ“Š Installing data science libraries..."
         pip install pandas numpy matplotlib scikit-learn jupyter 2>/dev/null || true
       EOT
     }
@@ -49,12 +49,13 @@ locals {
   chosen_profile = local.workspace_profiles[data.coder_parameter.workspace_profile.value]
 }
 
-# ── Data Sources ─────────────────────────────────────────────
+# â”€â”€ Data Sources â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 data "coder_provisioner" "me" {}
 data "coder_workspace" "me" {}
 data "coder_workspace_owner" "me" {}
 
-data "coder_external_auth" "github" {
-  id = "github"
-}
+# Uncomment with github-upload-public-key in modules.tf
+# data "coder_external_auth" "github" {
+#   id = "github"
+# }

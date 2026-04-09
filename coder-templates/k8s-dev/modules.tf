@@ -1,13 +1,13 @@
-# ── Always-on modules ────────────────────────────────────────
+# â”€â”€ Always-on modules â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-# Auto-uploads workspace owner's SSH public key to GitHub
-module "github-upload-public-key" {
-  count            = data.coder_workspace.me.start_count
-  source           = "registry.coder.com/coder/github-upload-public-key/coder"
-  version          = "1.0.32"
-  agent_id         = coder_agent.main.id
-  external_auth_id = data.coder_external_auth.github.id
-}
+# Temporarily disabled â€” needs write:public_key OAuth scope (re-enable after GitHub external-auth re-link).
+# module "github-upload-public-key" {
+#   count            = data.coder_workspace.me.start_count
+#   source           = "registry.coder.com/coder/github-upload-public-key/coder"
+#   version          = "1.0.32"
+#   agent_id         = coder_agent.main.id
+#   external_auth_id = data.coder_external_auth.github.id
+# }
 
 # Auto-configures git username and email inside workspace
 module "git-config" {
@@ -37,9 +37,9 @@ module "coder-login" {
   agent_id = coder_agent.main.id
 }
 
-# ── Profile-based modules ─────────────────────────────────────
+# â”€â”€ Profile-based modules â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-# Cursor IDE — enabled for standard+ profiles
+# Cursor IDE â€” enabled for standard+ profiles
 module "cursor" {
   count    = data.coder_workspace.me.start_count > 0 ? (contains(local.chosen_profile.preconfigured_modules, "cursor") ? 1 : 0) : 0
   source   = "registry.coder.com/coder/cursor/coder"
@@ -48,7 +48,7 @@ module "cursor" {
   folder   = "/home/coder"
 }
 
-# VS Code Desktop — enabled for standard+ profiles
+# VS Code Desktop â€” enabled for standard+ profiles
 module "vscode" {
   count    = data.coder_workspace.me.start_count > 0 ? (contains(local.chosen_profile.preconfigured_modules, "vscode") ? 1 : 0) : 0
   source   = "registry.coder.com/coder/vscode-desktop/coder"
@@ -57,7 +57,7 @@ module "vscode" {
   folder   = "/home/coder"
 }
 
-# JupyterLab — only enabled for large/xlarge profiles
+# JupyterLab â€” only enabled for large/xlarge profiles
 module "jupyterlab" {
   count    = data.coder_workspace.me.start_count > 0 ? (contains(local.chosen_profile.preconfigured_modules, "jupyterlab") ? 1 : 0) : 0
   source   = "registry.coder.com/coder/jupyterlab/coder"
@@ -75,7 +75,7 @@ module "jupyterlab" {
   })
 }
 
-# ── Claude Code AI Agent ──────────────────────────────────────
+# â”€â”€ Claude Code AI Agent â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 # Uncomment when you have an Anthropic API key
 # Set ANTHROPIC_API_KEY in your workspace environment or Coder secrets
 
