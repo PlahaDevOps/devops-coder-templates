@@ -44,7 +44,8 @@ services:
       CODER_EXTERNAL_AUTH_0_CLIENT_ID: "${GITHUB_EXTERNAL_CLIENT_ID}"
       CODER_EXTERNAL_AUTH_0_CLIENT_SECRET: "${GITHUB_EXTERNAL_CLIENT_SECRET}"
       CODER_EXTERNAL_AUTH_0_DISPLAY_NAME: "GitHub"
-      CODER_EXTERNAL_AUTH_0_SCOPES: "repo read:org"
+      # repo/git + org read + upload SSH keys (github-upload-public-key module in k8s-dev)
+      CODER_EXTERNAL_AUTH_0_SCOPES: "repo read:org write:public_key"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./coder-data:/home/coder/.config
