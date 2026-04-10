@@ -93,6 +93,22 @@ resource "kubernetes_pod" "workspace" {
         value = local.coder_agent_api_url
       }
 
+      # Avoid corporate/Windows proxy env leaking into child processes (can break Coder ↔ workspace dials).
+      env {
+        name  = "HTTP_PROXY"
+        value = ""
+      }
+
+      env {
+        name  = "HTTPS_PROXY"
+        value = ""
+      }
+
+      env {
+        name  = "NO_PROXY"
+        value = "*"
+      }
+
       # agentapi reads AGENTAPI_* (viper) — iframe / ccw--*.localhost embeds need permissive CORS, not only localhost:*
       env {
         name  = "AGENTAPI_ALLOWED_HOSTS"
