@@ -37,7 +37,7 @@ Coder/
 From the repository root:
 
 ```powershell
-# 1. Copy and edit secrets (OAuth, ngrok, CODER_ACCESS_URL)
+# 1. Copy and edit secrets (OAuth, ngrok, CODER_ACCESS_URL; optional ANTHROPIC_API_KEY to silence compose warnings)
 copy .env.example .env
 
 # 2. Start Coder and ngrok
@@ -103,10 +103,22 @@ Uses a **self-hosted Windows runner**. Install and register it using **`.github/
 
 PR checks do not require these secrets.
 
+## Embedded workspace apps on Windows
+
+Coder may open apps on hosts like `http://ccw--<user>--<workspace>.localhost:3000`. **`CODER_WILDCARD_ACCESS_URL`** (e.g. `*.localhost:3000`) is correct on the server, but **Windows does not resolve arbitrary `*.localhost` in the browser** the way many Linux setups do. If the embedded app never loads, either:
+
+- **Hosts file (Administrator PowerShell):** add a line per workspace app host, e.g. `127.0.0.1 ccw--admin--Ai-wspace.localhost` (match the exact hostname from the broken URL), or  
+- **Local DNS** such as [Acrylic](https://mayakron.com/alternate-dns-proxy/) — on some systems: `winget install AcrylicDNS` — to handle wildcard `*.localhost` on your machine.
+
+You can still use **Terminal** in the workspace for Claude / Tasks output if the iframe URL fails to resolve.
+
 ## Troubleshooting
 
 | Issue | What to try |
 |-------|-------------|
+| **Compose warns `ANTHROPIC_API_KEY` not set** | Add `ANTHROPIC_API_KEY=` in `.env` (value optional for the server; k8s-dev pods use the `anthropic-api-key` secret). |
+| **Embedded app / Claude button URL does not load (Windows)** | See [Embedded workspace apps on Windows](#embedded-workspace-apps-on-windows). |
+| **Heartbeat / websocket ping errors in `coder` logs** | Often **ngrok** or idle clients closing the tunnel; usually not fatal. Prefer stable access (e.g. `localhost` for same-machine CLI). |
 | **Docker / Terraform cannot reach Docker** | Enable TCP in Docker Desktop; ensure `DOCKER_HOST` / compose matches your setup (see `.env.example`). |
 | **`rbac: forbidden` on template deploy** | Grant **Template Admin** (or **Owner**) to the Coder user that owns **`CODER_TOKEN`**; recreate token and update the secret. |
 | **ngrok browser warning breaks API/CLI** | Prefer **`CODER_URL=http://localhost:3000`** on a self-hosted runner on the same PC, or a stable HTTPS URL without the free-tier interstitial. |
