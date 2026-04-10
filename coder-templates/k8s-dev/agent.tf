@@ -24,6 +24,10 @@ resource "coder_agent" "main" {
 
   startup_script = <<-EOT
     set -e
+    # Pod env from K8s secret — export early so any child process sees them (same values as ANTHROPIC_*).
+    export CLAUDE_API_KEY="$$CLAUDE_API_KEY"
+    export ANTHROPIC_API_KEY="$$ANTHROPIC_API_KEY"
+
     echo "ðŸš€ Starting workspace setup..."
 
     # Install base tools

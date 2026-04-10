@@ -6,6 +6,9 @@ locals {
   # For cloud K8s, set to your public CODER_ACCESS_URL (https://...) instead.
   coder_agent_api_url = "http://host.docker.internal:3000"
 
+  # Host:port only (no scheme) — same shape as claude-code module's ARG_CODER_HOST (from access_url).
+  coder_agent_api_host = replace(replace(local.coder_agent_api_url, "https://", ""), "http://", "")
+
   # Git config â€” uses full name if available, falls back to username
   git_author_name  = coalesce(data.coder_workspace_owner.me.full_name, data.coder_workspace_owner.me.name)
   git_author_email = data.coder_workspace_owner.me.email

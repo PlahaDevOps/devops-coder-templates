@@ -81,10 +81,32 @@ module "jupyterlab" {
 # subdomain=true: AgentAPI/coder_app proxy as subdomain (often fixes "No embedded apps" vs path-only routing behind ngrok).
 
 module "claude_code" {
-  count    = data.coder_workspace.me.start_count
-  source   = "registry.coder.com/coder/claude-code/coder"
-  version  = "4.7.5"
-  agent_id = coder_agent.main.id
-  workdir  = "/home/coder/devops-coder-templates"
+  count     = data.coder_workspace.me.start_count
+  source    = "registry.coder.com/coder/claude-code/coder"
+  version   = "4.7.5"
+  agent_id  = coder_agent.main.id
+  workdir   = "/home/coder/devops-coder-templates"
   subdomain = true
+
+  # Runs after install.sh writes agentapi-start.sh: patch ARG_CODER_HOST (Terraform embeds access_url/ngrok)
+  # and persist CLAUDE_API_KEY into ~/.claude.json for the CLI.
+  post_install_script = <<-EOT
+#!/bin/bash
+set -euo pipefail
+_AGENTAPI_START="$$HOME/.claude-module/scripts/agentapi-start.sh"
+if [ -f "$$_AGENTAPI_START" ]; then
+  sed -i "s|ARG_CODER_HOST='[^']*'|ARG_CODER_HOST='${local.coder_agent_api_host}'|g" "$$_AGENTAPI_START"
+  echo "[claude_code post_install] Patched ARG_CODER_HOST to ${local.coder_agent_api_host}"
+fi
+if [ -n "$$CLAUDE_API_KEY" ] && command -v jq >/dev/null 2>&1; then
+  _cf="$$HOME/.claude.json"
+  mkdir -p "$$HOME/.claude"
+  if [ -f "$$_cf" ]; then
+    jq --arg k "$$CLAUDE_API_KEY" '. + {primaryApiKey: $$k, hasCompletedOnboarding: true, autoUpdaterStatus: "disabled"}' "$$_cf" > /tmp/.claude.json.tmp && mv /tmp/.claude.json.tmp "$$_cf"
+  else
+    jq -n --arg k "$$CLAUDE_API_KEY" '{primaryApiKey: $$k, hasCompletedOnboarding: true, autoUpdaterStatus: "disabled"}' > "$$_cf"
+  fi
+  echo "[claude_code post_install] Ensured primaryApiKey in ~/.claude.json"
+fi
+EOT
 }
