@@ -112,6 +112,17 @@ resource "kubernetes_pod" "workspace" {
         }
       }
 
+      # Claude Code / install.sh expect CLAUDE_API_KEY (same value as Anthropic key)
+      env {
+        name = "CLAUDE_API_KEY"
+        value_from {
+          secret_key_ref {
+            name = "anthropic-api-key"
+            key  = "api-key"
+          }
+        }
+      }
+
       resources {
         requests = {
           cpu    = local.chosen_profile.cpu_request
