@@ -91,6 +91,17 @@ resource "kubernetes_pod" "workspace" {
         value = local.git_author_email
       }
 
+      # Anthropic API key — create first: kubectl create secret generic anthropic-api-key --from-literal=api-key=YOUR_KEY -n coder-workspaces
+      env {
+        name = "ANTHROPIC_API_KEY"
+        value_from {
+          secret_key_ref {
+            name = "anthropic-api-key"
+            key  = "api-key"
+          }
+        }
+      }
+
       resources {
         requests = {
           cpu    = local.chosen_profile.cpu_request

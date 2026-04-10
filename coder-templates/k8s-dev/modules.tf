@@ -75,17 +75,12 @@ module "jupyterlab" {
   })
 }
 
-# â”€â”€ Claude Code AI Agent â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-# Uncomment when you have an Anthropic API key
-# Set ANTHROPIC_API_KEY in your workspace environment or Coder secrets
+# Claude Code AI Agent - requires ANTHROPIC_API_KEY on the workspace pod (kubernetes.tf) and Secret anthropic-api-key in the namespace
 
-# module "claude-code" {
-#   count    = data.coder_workspace.me.start_count
-#   source   = "registry.coder.com/coder/claude-code/coder"
-#   version  = "4.7.5"
-#   agent_id = coder_agent.main.id
-#   workdir  = "/home/coder"
-#   post_install_script = <<-EOT
-#     echo "Claude Code ready!"
-#   EOT
-# }
+module "claude-code" {
+  count    = data.coder_workspace.me.start_count
+  source   = "registry.coder.com/coder/claude-code/coder"
+  version  = "4.7.5"
+  agent_id = coder_agent.main.id
+  workdir  = "/home/coder"
+}

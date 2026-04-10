@@ -46,6 +46,8 @@ services:
       CODER_EXTERNAL_AUTH_0_DISPLAY_NAME: "GitHub"
       # Git + org + user SSH keys on GitHub (github-upload-public-key module when enabled)
       CODER_EXTERNAL_AUTH_0_SCOPES: "repo read:org write:public_key"
+      # Optional: passed through if you use server-side features expecting this var; k8s-dev workspaces use the K8s secret on the pod.
+      ANTHROPIC_API_KEY: "${ANTHROPIC_API_KEY}"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./coder-data:/home/coder/.config
