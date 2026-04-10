@@ -133,3 +133,4 @@ You can still use the workspace **Terminal** (or Tasks → Terminal) for Claude 
 | **`rbac: forbidden` on template deploy** | Grant **Template Admin** (or **Owner**) to the Coder user that owns **`CODER_TOKEN`**; recreate token and update the secret. |
 | **ngrok browser warning breaks API/CLI** | Prefer **`CODER_URL=http://localhost:3000`** on a self-hosted runner on the same PC, or a stable HTTPS URL without the free-tier interstitial. |
 | **Workspace agent / Docker errors** | Confirm Coder server can use Docker over TCP (`host.docker.internal:2375`) as in compose and template docs. |
+| **Tasks stuck on “Initializing” / “Agent is connecting” (k8s-dev)** | The agent init script must download the binary from the host, not `localhost` inside the pod. **`k8s-dev`** patches `init_script` like **docker-dev** (`host.docker.internal`). Push the latest template and **rebuild** the workspace. |

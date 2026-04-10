@@ -70,7 +70,9 @@ resource "kubernetes_pod" "workspace" {
       name              = "dev"
       image             = "codercom/enterprise-base:ubuntu"
       image_pull_policy = "Always"
-      command           = ["sh", "-c", coder_agent.main.init_script]
+      # CODER_ACCESS_URL is http://localhost:3000 — init_script embeds that for agent binary download; inside a
+      # pod localhost is not the Coder server. Same pattern as coder-templates/docker-dev/main.tf entrypoint.
+      command = ["sh", "-c", replace(replace(coder_agent.main.init_script, "127.0.0.1", "host.docker.internal"), "localhost", "host.docker.internal")]
 
       security_context {
         run_as_user = 1000
