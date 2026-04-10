@@ -82,6 +82,16 @@ resource "kubernetes_pod" "workspace" {
       }
 
       env {
+        name  = "CODER_AGENT_URL"
+        value = local.coder_agent_api_url
+      }
+
+      env {
+        name  = "CODER_URL"
+        value = local.coder_agent_api_url
+      }
+
+      env {
         name  = "GIT_AUTHOR_NAME"
         value = local.git_author_name
       }

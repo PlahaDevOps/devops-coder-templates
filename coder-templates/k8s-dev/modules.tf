@@ -82,5 +82,5 @@ module "claude_code" {
   source   = "registry.coder.com/coder/claude-code/coder"
   version  = "4.7.5"
   agent_id = coder_agent.main.id
-  workdir  = "/home/coder"
+  workdir  = "/home/coder/devops-coder-templates"
 }

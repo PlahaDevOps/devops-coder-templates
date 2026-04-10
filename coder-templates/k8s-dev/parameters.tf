@@ -31,7 +31,7 @@ data "coder_parameter" "repo_url" {
   name         = "repo_url"
   display_name = "Repository URL"
   description  = "URL of the repository to clone into your workspace."
-  default      = ""
+  default      = "https://github.com/PlahaDevOps/devops-coder-templates"
   icon         = "/emojis/1f4d6.png"
   order        = 2
   mutable      = false
