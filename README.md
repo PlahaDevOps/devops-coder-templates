@@ -81,6 +81,9 @@ coder templates push docker-dev --directory ./coder-templates/docker-dev
 # Create workspace
 coder create my-workspace --template=docker-dev
 
+# List workspaces (not `coder workspaces list`)
+coder list
+
 coder ssh my-workspace
 ```
 
@@ -105,19 +108,26 @@ PR checks do not require these secrets.
 
 ## Embedded workspace apps on Windows
 
-Coder may open apps on hosts like `http://ccw--<user>--<workspace>.localhost:3000`. **`CODER_WILDCARD_ACCESS_URL`** (e.g. `*.localhost:3000`) is correct on the server, but **Windows does not resolve arbitrary `*.localhost` in the browser** the way many Linux setups do. If the embedded app never loads, either:
+With **`CODER_WILDCARD_ACCESS_URL`** (e.g. `*.localhost:3000`), Coder may open Claude Code / AgentAPI on hosts like:
 
-- **Hosts file (Administrator PowerShell):** add a line per workspace app host, e.g. `127.0.0.1 ccw--admin--Ai-wspace.localhost` (match the exact hostname from the broken URL), or  
-- **Local DNS** such as [Acrylic](https://mayakron.com/alternate-dns-proxy/) — on some systems: `winget install AcrylicDNS` — to handle wildcard `*.localhost` on your machine.
+`http://ccw--<segment>--<owner>.localhost:3000`
 
-You can still use **Terminal** in the workspace for Claude / Tasks output if the iframe URL fails to resolve.
+The middle segment is **not always the workspace name** — for **AI Tasks** it often includes a **task-derived slug** (e.g. `what-is-11-print-31d2`), so **each new task can get a different hostname**. Copy the exact URL from the dashboard or browser address bar.
+
+**Windows** usually does not resolve arbitrary `*.localhost` like many Linux setups. Options:
+
+- **Hosts file (Administrator):** add `127.0.0.1` plus the **full hostname** (no `http://`), one line per host — workable for a fixed app URL, tedious if the task slug changes every time.
+- **Local DNS** such as [Acrylic](https://mayakron.com/alternate-dns-proxy/) — e.g. `winget install AcrylicDNS` — so `*.localhost` resolves without editing `hosts` for every task.
+
+You can still use the workspace **Terminal** (or Tasks → Terminal) for Claude output if the embedded iframe URL fails to resolve.
 
 ## Troubleshooting
 
 | Issue | What to try |
 |-------|-------------|
 | **Compose warns `ANTHROPIC_API_KEY` not set** | Add `ANTHROPIC_API_KEY=` in `.env` (value optional for the server; k8s-dev pods use the `anthropic-api-key` secret). |
-| **Embedded app / Claude button URL does not load (Windows)** | See [Embedded workspace apps on Windows](#embedded-workspace-apps-on-windows). |
+| **Embedded app / Claude button URL does not load (Windows)** | See [Embedded workspace apps on Windows](#embedded-workspace-apps-on-windows); use the **exact** hostname Coder shows (task slugs change per AI task). |
+| **`coder workspaces list` unrecognized** | Use **`coder list`** (Coder v2 CLI). |
 | **Heartbeat / websocket ping errors in `coder` logs** | Often **ngrok** or idle clients closing the tunnel; usually not fatal. Prefer stable access (e.g. `localhost` for same-machine CLI). |
 | **Docker / Terraform cannot reach Docker** | Enable TCP in Docker Desktop; ensure `DOCKER_HOST` / compose matches your setup (see `.env.example`). |
 | **`rbac: forbidden` on template deploy** | Grant **Template Admin** (or **Owner**) to the Coder user that owns **`CODER_TOKEN`**; recreate token and update the secret. |
