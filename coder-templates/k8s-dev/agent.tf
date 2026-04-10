@@ -28,6 +28,13 @@ resource "coder_agent" "main" {
     export CLAUDE_API_KEY="$$CLAUDE_API_KEY"
     export ANTHROPIC_API_KEY="$$ANTHROPIC_API_KEY"
 
+    # AgentAPI install script bakes access_url (localhost:3000). From a K8s pod that is wrong — fix every boot.
+    _aa="$$HOME/.claude-module/scripts/agentapi-start.sh"
+    if [ -f "$$_aa" ]; then
+      sed -i "s|ARG_CODER_HOST='localhost:3000'|ARG_CODER_HOST='${local.coder_agent_api_host}'|g" "$$_aa" || true
+      sed -i 's|ARG_CODER_HOST="localhost:3000"|ARG_CODER_HOST="${local.coder_agent_api_host}"|g' "$$_aa" || true
+    fi
+
     echo "ðŸš€ Starting workspace setup..."
 
     # Install base tools

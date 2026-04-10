@@ -96,6 +96,8 @@ set -euo pipefail
 _AGENTAPI_START="$$HOME/.claude-module/scripts/agentapi-start.sh"
 if [ -f "$$_AGENTAPI_START" ]; then
   sed -i "s|ARG_CODER_HOST='[^']*'|ARG_CODER_HOST='${local.coder_agent_api_host}'|g" "$$_AGENTAPI_START"
+  sed -i "s|ARG_CODER_HOST='localhost:3000'|ARG_CODER_HOST='${local.coder_agent_api_host}'|g" "$$_AGENTAPI_START"
+  sed -i 's|ARG_CODER_HOST="localhost:3000"|ARG_CODER_HOST="${local.coder_agent_api_host}"|g' "$$_AGENTAPI_START"
   echo "[claude_code post_install] Patched ARG_CODER_HOST to ${local.coder_agent_api_host}"
 fi
 if [ -n "$$CLAUDE_API_KEY" ] && command -v jq >/dev/null 2>&1; then

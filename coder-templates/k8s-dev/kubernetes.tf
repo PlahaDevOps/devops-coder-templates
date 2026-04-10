@@ -93,6 +93,17 @@ resource "kubernetes_pod" "workspace" {
         value = local.coder_agent_api_url
       }
 
+      # agentapi reads AGENTAPI_* (viper) — iframe / ccw--*.localhost embeds need permissive CORS, not only localhost:*
+      env {
+        name  = "AGENTAPI_ALLOWED_HOSTS"
+        value = "*"
+      }
+
+      env {
+        name  = "AGENTAPI_ALLOWED_ORIGINS"
+        value = "*"
+      }
+
       env {
         name  = "GIT_AUTHOR_NAME"
         value = local.git_author_name
