@@ -1,5 +1,5 @@
 # Secrets come from .env (gitignored). Do not put real tokens in git.
-# Fill NGROK_DOMAIN + CODER_ACCESS_URL after you reserve a static domain in ngrok dashboard.
+# CODER_ACCESS_URL is HTTP localhost below so dashboard + *.localhost workspace apps share one origin (no https:// mismatch). For GitHub OAuth, register callbacks on http://localhost:3000. ngrok remains optional for remote access to the tunnel only.
 
 services:
   ngrok:
@@ -31,10 +31,10 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     environment:
-      CODER_ACCESS_URL: "${CODER_ACCESS_URL}"
-      # Workspace app subdomains (embedded Claude Code / AgentAPI). Must match your access pattern; ngrok users need a wildcard-capable host (often paid) — see .env.example.
+      # Must match browser URL (http only here — no https://) so embedded apps / Tasks iframes resolve under *.localhost:3000.
+      CODER_ACCESS_URL: "http://localhost:3000"
       # Hostname pattern only — no scheme (Coder rejects http:// here).
-      CODER_WILDCARD_ACCESS_URL: "${CODER_WILDCARD_ACCESS_URL:-*.localhost:3000}"
+      CODER_WILDCARD_ACCESS_URL: "*.localhost:3000"
       CODER_HTTP_ADDRESS: "0.0.0.0:3000"
       # GitHub OAuth app "Coder Local" — sign-in (callback …/api/v2/users/oauth2/github/callback)
       CODER_OAUTH2_GITHUB_CLIENT_ID: "${GITHUB_CLIENT_ID}"

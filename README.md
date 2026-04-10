@@ -29,7 +29,7 @@ Coder/
 ## Prerequisites
 
 - **Docker Desktop** — TCP API enabled: **Settings → General →** expose daemon on `tcp://localhost:2375` (local dev only).
-- **ngrok** account and a **static domain** (used by `docker-compose` for a public URL; fill `NGROK_*` and `CODER_ACCESS_URL` in `.env`).
+- **ngrok** (optional) — `docker-compose` can expose a tunnel; fill `NGROK_*` in `.env` if you use it. **`CODER_ACCESS_URL` is `http://localhost:3000` in compose** so the UI and `*.localhost` apps share one HTTP origin; GitHub OAuth callbacks should use `http://localhost:3000/...`.
 - **Two GitHub OAuth apps** — see [GitHub OAuth setup](#github-oauth-setup).
 
 ## Quick start
@@ -37,7 +37,7 @@ Coder/
 From the repository root:
 
 ```powershell
-# 1. Copy and edit secrets (OAuth, ngrok, CODER_ACCESS_URL; optional ANTHROPIC_API_KEY to silence compose warnings)
+# 1. Copy and edit secrets (OAuth, optional ngrok, optional ANTHROPIC_API_KEY)
 copy .env.example .env
 
 # 2. Start Coder and ngrok
@@ -49,12 +49,12 @@ start http://localhost:3000
 
 ## GitHub OAuth setup
 
-Create two OAuth apps at [GitHub → Developer settings → OAuth Apps](https://github.com/settings/developers). Callback hosts must match **`CODER_ACCESS_URL`** in `.env`.
+Create two OAuth apps at [GitHub → Developer settings → OAuth Apps](https://github.com/settings/developers). Callback hosts must match **`http://localhost:3000`** (same as `CODER_ACCESS_URL` in `docker-compose.yml`).
 
 | App name | Callback URL |
 |----------|----------------|
-| Coder Local (sign-in) | `https://YOUR_DOMAIN/api/v2/users/oauth2/github/callback` |
-| Coder Local External (Git in workspaces) | `https://YOUR_DOMAIN/external-auth/github/callback` |
+| Coder Local (sign-in) | `http://localhost:3000/api/v2/users/oauth2/github/callback` |
+| Coder Local External (Git in workspaces) | `http://localhost:3000/external-auth/github/callback` |
 
 Copy **Client ID** and **secret** into `.env` as documented in **`.env.example`**.
 
