@@ -27,7 +27,7 @@ resource "coder_agent" "main" {
 
     # Install base tools
     sudo apt-get update -q
-    sudo apt-get install -y git curl wget vim unzip jq
+    sudo apt-get install -y git curl wget vim unzip jq nano
 
     # Setup SSH public key from Coder workspace owner
     mkdir -p ~/.ssh
