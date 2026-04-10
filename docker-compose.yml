@@ -19,7 +19,7 @@ services:
       - "4040:4040"
 
   coder:
-    image: ghcr.io/coder/coder:latest
+    image: ghcr.io/coder/coder:v2.31.9
     container_name: coder
     restart: unless-stopped
     # Docker: host socket mounted below. (docker-dev Terraform still uses tcp://host.docker.internal:2375 — keep TCP enabled in Docker Desktop.)
