@@ -77,6 +77,8 @@ module "jupyterlab" {
 
 # Claude Code AI Agent - requires ANTHROPIC_API_KEY / CLAUDE_API_KEY on the pod (kubernetes.tf) and Secret anthropic-api-key.
 # Registry module 4.7.5 has no coder_host var; ARG_CODER_HOST is derived from access_url. Use local.coder_agent_api_url via coder_env_coder_url.tf (CODER_URL) instead of ngrok.
+# There is no `slug` argument — the child agentapi module already uses web_app_slug "ccw" (see registry claude-code locals.app_slug).
+# subdomain=true: AgentAPI/coder_app proxy as subdomain (often fixes "No embedded apps" vs path-only routing behind ngrok).
 
 module "claude_code" {
   count    = data.coder_workspace.me.start_count
@@ -84,4 +86,5 @@ module "claude_code" {
   version  = "4.7.5"
   agent_id = coder_agent.main.id
   workdir  = "/home/coder/devops-coder-templates"
+  subdomain = true
 }
