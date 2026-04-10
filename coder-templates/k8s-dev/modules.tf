@@ -77,7 +77,7 @@ module "jupyterlab" {
 
 # Claude Code AI Agent - requires ANTHROPIC_API_KEY on the workspace pod (kubernetes.tf) and Secret anthropic-api-key in the namespace
 
-module "claude-code" {
+module "claude_code" {
   count    = data.coder_workspace.me.start_count
   source   = "registry.coder.com/coder/claude-code/coder"
   version  = "4.7.5"

@@ -5,10 +5,11 @@ resource "coder_agent" "main" {
 
   # Git identity injected as env vars â€” same as Aven's pattern
   env = {
-    GIT_AUTHOR_NAME     = local.git_author_name
-    GIT_AUTHOR_EMAIL    = local.git_author_email
-    GIT_COMMITTER_NAME  = local.git_author_name
-    GIT_COMMITTER_EMAIL = local.git_author_email
+    GIT_AUTHOR_NAME          = local.git_author_name
+    GIT_AUTHOR_EMAIL         = local.git_author_email
+    GIT_COMMITTER_NAME       = local.git_author_name
+    GIT_COMMITTER_EMAIL      = local.git_author_email
+    CODER_AGENT_ENABLE_TASKS = "true"
   }
 
   display_apps {
