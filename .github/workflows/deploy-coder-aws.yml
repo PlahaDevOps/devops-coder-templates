@@ -1,0 +1,32 @@
+name: Deploy Coder Template (AWS)
+on:
+  push:
+    branches: [main]
+    paths:
+      - "coder-templates/**"
+env:
+  CODER_CLI_VERSION: "2.31.7"
+jobs:
+  deploy:
+    name: Deploy template to Coder (AWS)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install Coder CLI
+        run: curl -fsSL https://coder.com/install.sh | sh -s -- --version $CODER_CLI_VERSION
+      - name: Login to Coder
+        env:
+          CODER_URL: ${{ secrets.AWS_CODER_URL }}
+          CODER_SESSION_TOKEN: ${{ secrets.AWS_CODER_TOKEN }}
+        run: coder login $CODER_URL --token $CODER_SESSION_TOKEN
+      - name: Push docker-dev template
+        env:
+          CODER_URL: ${{ secrets.AWS_CODER_URL }}
+          CODER_SESSION_TOKEN: ${{ secrets.AWS_CODER_TOKEN }}
+        run: coder templates push docker-dev --directory ./coder-templates/docker-dev --yes
+      - name: Push k8s-dev template
+        env:
+          CODER_URL: ${{ secrets.AWS_CODER_URL }}
+          CODER_SESSION_TOKEN: ${{ secrets.AWS_CODER_TOKEN }}
+        run: coder templates push k8s-dev --directory ./coder-templates/k8s-dev --yes
