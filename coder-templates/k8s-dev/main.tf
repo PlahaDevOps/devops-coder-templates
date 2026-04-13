@@ -1,3 +1,5 @@
+# Deployed via CI/CD
+
 terraform {
   required_providers {
     coder = {
