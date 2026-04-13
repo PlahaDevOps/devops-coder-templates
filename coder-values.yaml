@@ -1,0 +1,29 @@
+coder:
+  env:
+    - name: CODER_ACCESS_URL
+      value: "http://18.191.148.4:32480"
+    - name: CODER_WILDCARD_ACCESS_URL
+      value: "*.18.191.148.4.nip.io:32480"
+    - name: CODER_EXTERNAL_AUTH_0_ID
+      value: "github"
+    - name: CODER_EXTERNAL_AUTH_0_TYPE
+      value: "github"
+    - name: CODER_EXTERNAL_AUTH_0_CLIENT_ID
+      valueFrom:
+        secretKeyRef:
+          name: coder-github-oauth
+          key: client-id
+    - name: CODER_EXTERNAL_AUTH_0_CLIENT_SECRET
+      valueFrom:
+        secretKeyRef:
+          name: coder-github-oauth
+          key: client-secret
+  service:
+    type: NodePort
+  resources:
+    requests:
+      cpu: "250m"
+      memory: "256Mi"
+    limits:
+      cpu: "500m"
+      memory: "512Mi"
