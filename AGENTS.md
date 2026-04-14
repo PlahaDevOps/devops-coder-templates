@@ -51,7 +51,7 @@ These integrations use repo context and should follow **Review guidelines** belo
 | **ChatGPT Codex Connector** | GitHub App; PR review and `@codex review` style triggers (per Codex settings). Reads this file for review context. |
 | **Claude** (Anthropic GitHub App / Chat) | Optional connector; same repo access as configured in GitHub. |
 | **Claude Code Review** | GitHub Action: `.github/workflows/claude-review.yml` using `anthropics/claude-code-action` + `ANTHROPIC_API_KEY`. **Manual only:** comment **`@claude`** on a PR to run (not on every PR open). Review prompt references this file; **`CLAUDE.md`** points here. |
-| **Gemini Code Assist** | GitHub App; **automatically reviews each PR when it is opened** (per app/repo settings—no comment required). Configuration in **`.gemini/config.yaml`**. Uses repo context and **Review guidelines** here. Optionally invoke again with **`@gemini-code-assist`** or **`/gemini review`** in PR comments. |
+| **Gemini Code Assist** | GitHub App; **reviews automatically when a ready (non-draft) PR is opened**—draft PRs are excluded when `include_drafts: false` in **`.gemini/config.yaml`**. That file sets `code_review.pull_request_opened` (e.g. `code_review: true`, `summary: true`). Uses repo context and **Review guidelines** here. Optional follow-up: **`@gemini-code-assist`** or **`/gemini review`**. |
 
 **`CLAUDE.md`** at the repo root is a short pointer to this file so Claude-specific tooling that expects `CLAUDE.md` still lands on the same rules.
 
@@ -61,7 +61,7 @@ Quick reference (exact phrasing can vary; see each product’s docs):
 
 - **Codex:** comment `@codex review` on the PR (or rely on auto-review when a PR is opened for review, per Codex settings).  
 - **Claude (Actions):** comment with **`@claude`** on the PR to trigger **Claude Code Review** (no automatic run on PR open).  
-- **Gemini Code Assist:** **auto-reviews on PR open** (primary behavior). For another pass or follow-ups, use **`@gemini-code-assist`** or **`/gemini review`** if needed.
+- **Gemini Code Assist:** automatic behavior is in the table above; use **`@gemini-code-assist`** or **`/gemini review`** only if you want another pass.
 
 ### Assistant behavior (all tools)
 
@@ -98,6 +98,6 @@ Use this for PR review (human or automated):
 
 ## CI/CD (brief)
 
-- Workflows live under **`.github/workflows/`** (template validation, deploy to Coder via `coder templates push`, optional Windows self-hosted deploy, Claude review, etc.). **Gemini Code Assist** runs via the GitHub App (not Actions)—**auto-reviews PRs on open**; see **`.gemini/config.yaml`**.
+- Workflows live under **`.github/workflows/`** (template validation, deploy to Coder via `coder templates push`, optional Windows self-hosted deploy, Claude Code Action, etc.). **Gemini** is not an Action—it runs via the GitHub App; see **AI tools & bots** and **`.gemini/config.yaml`**.
 - Do **not** embed secrets in YAML; use **repository secrets** and environment-specific configuration.  
 - Deploy paths may use GitHub-hosted runners (`ubuntu-latest`) and/or self-hosted runners as configured.
