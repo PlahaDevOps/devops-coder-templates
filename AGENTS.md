@@ -5,6 +5,8 @@ Coder workspace templates using Terraform, deployed on k3s/Kubernetes on AWS EC2
 
 Tools that automate pull request review (for example the ChatGPT Codex Connector) read this file—especially the **Review Guidelines** section—when suggesting changes on GitHub.
 
+**Claude** (Anthropic): use **`CLAUDE.md`** at the repo root for the same kind of project and review guidance, tailored for Claude in GitHub and other Claude surfaces.
+
 ## Build & Validate
 - Run `terraform fmt -check` to verify formatting
 - Run `terraform validate` in each template directory
