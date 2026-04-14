@@ -24,6 +24,8 @@ Layout at a glance (workflows match this repo):
 ```text
 ├── AGENTS.md                     ← This file (single source of truth)
 ├── CLAUDE.md                     ← Pointer to AGENTS.md
+├── .gemini/
+│   └── config.yaml               ← Gemini Code Assist (GitHub App) settings
 ├── coder-templates/
 │   ├── AGENTS.md                 ← Stub; redirects to root AGENTS.md
 │   ├── docker-dev/
@@ -49,6 +51,7 @@ These integrations use repo context and should follow **Review guidelines** belo
 | **ChatGPT Codex Connector** | GitHub App; PR review and `@codex review` style triggers (per Codex settings). Reads this file for review context. |
 | **Claude** (Anthropic GitHub App / Chat) | Optional connector; same repo access as configured in GitHub. |
 | **Claude Code Review** | GitHub Action: `.github/workflows/claude-review.yml` using `anthropics/claude-code-action` + `ANTHROPIC_API_KEY`. Runs on PRs to `main` and on `@claude` in comments. Review prompt references this file and **`CLAUDE.md`** stub points here. |
+| **Gemini Code Assist** | GitHub App; **automatically reviews each PR when it is opened** (per app/repo settings—no comment required). Configuration in **`.gemini/config.yaml`**. Uses repo context and **Review guidelines** here. Optionally invoke again with **`@gemini-code-assist`** or **`/gemini review`** in PR comments. |
 
 **GitHub OIDC / workflow validation:** The action exchanges an OIDC token for an app token. GitHub requires **`.github/workflows/claude-review.yml` on the PR branch to match `main`** (same content) for that exchange. If a PR **only updates that workflow file**, the job may **skip** the action (with a notice) until you merge—then future PRs work. If you see `401 Workflow validation failed`, merge the workflow to `main` first, or trigger review via **`@claude`** on a PR where this workflow file is unchanged vs `main`.
 
@@ -59,7 +62,8 @@ These integrations use repo context and should follow **Review guidelines** belo
 Quick reference (exact phrasing can vary; see each product’s docs):
 
 - **Codex:** comment `@codex review` on the PR (or rely on auto-review when a PR is opened for review, per Codex settings).  
-- **Claude:** comment with `@claude` on the PR—for example `@claude review this PR`—or rely on the **Claude Code Review** workflow when a PR targets `main` (`opened` / `synchronize`).
+- **Claude:** comment with `@claude` on the PR—for example `@claude review this PR`—or rely on the **Claude Code Review** workflow when a PR targets `main` (`opened` / `synchronize`).  
+- **Gemini Code Assist:** **auto-reviews on PR open** (primary behavior). For another pass or follow-ups, use **`@gemini-code-assist`** or **`/gemini review`** if needed.
 
 ### Assistant behavior (all tools)
 
@@ -96,6 +100,6 @@ Use this for PR review (human or automated):
 
 ## CI/CD (brief)
 
-- Workflows live under **`.github/workflows/`** (template validation, deploy to Coder via `coder templates push`, optional Windows self-hosted deploy, Claude review, etc.).  
+- Workflows live under **`.github/workflows/`** (template validation, deploy to Coder via `coder templates push`, optional Windows self-hosted deploy, Claude review, etc.). **Gemini Code Assist** runs via the GitHub App (not Actions)—**auto-reviews PRs on open**; see **`.gemini/config.yaml`**.
 - Do **not** embed secrets in YAML; use **repository secrets** and environment-specific configuration.  
 - Deploy paths may use GitHub-hosted runners (`ubuntu-latest`) and/or self-hosted runners as configured.
