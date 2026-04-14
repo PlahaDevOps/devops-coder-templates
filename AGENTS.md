@@ -51,7 +51,7 @@ These integrations use repo context and should follow **Review guidelines** belo
 | **ChatGPT Codex Connector** | GitHub App; PR review and `@codex review` style triggers (per Codex settings). Reads this file for review context. |
 | **Claude** (Anthropic GitHub App / Chat) | Optional connector; same repo access as configured in GitHub. |
 | **Claude Code Review** | GitHub Action: `.github/workflows/claude-review.yml` using `anthropics/claude-code-action` + `ANTHROPIC_API_KEY`. **Manual only:** comment **`@claude`** on a PR to run (not on every PR open). Review prompt references this file; **`CLAUDE.md`** points here. |
-| **Gemini Code Assist** | GitHub App; **automatically reviews each PR when it is opened** (per app/repo settings—no comment required). Configuration in **`.gemini/config.yaml`**. Uses repo context and **Review guidelines** here. Optionally invoke again with **`@gemini-code-assist`** or **`/gemini review`** in PR comments. |
+| **Gemini Code Assist** | GitHub App; **automatically reviews when a PR is opened** (not draft if `include_drafts: false` in config). Configuration: **`.gemini/config.yaml`** (`code_review.pull_request_opened.code_review: true`). Uses repo context and **Review guidelines** here. Manually: **`@gemini-code-assist`** or **`/gemini review`**. |
 
 **`CLAUDE.md`** at the repo root is a short pointer to this file so Claude-specific tooling that expects `CLAUDE.md` still lands on the same rules.
 

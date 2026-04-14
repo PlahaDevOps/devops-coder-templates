@@ -1,0 +1,22 @@
+# Gemini Code Assist — repo config
+# Schema: https://developers.google.com/gemini-code-assist/docs/customize-repo-review
+#
+# Automatic review when a PR is opened: pull_request_opened.code_review (default true).
+# Set code_review.disable: true to turn off all PR automation for this repo.
+
+have_fun: false
+
+memory_config:
+  disabled: false
+
+code_review:
+  disable: false
+  comment_severity_threshold: MEDIUM
+  max_review_comments: -1
+  pull_request_opened:
+    help: false
+    summary: true
+    code_review: true
+    include_drafts: false
+
+ignore_patterns: []
