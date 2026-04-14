@@ -1,0 +1,8 @@
+---
+description: DevOps / Coder templates — canonical rules live in AGENTS.md
+alwaysApply: true
+---
+
+# Cursor Rules
+
+See **AGENTS.md** in the repository root for all project conventions, review guidelines, and CI/CD documentation.

@@ -24,6 +24,14 @@ Layout at a glance (workflows match this repo):
 ```text
 ├── AGENTS.md                     ← This file (single source of truth)
 ├── CLAUDE.md                     ← Pointer to AGENTS.md
+├── README.md                     ← Repo overview (if present)
+├── .claude/
+│   └── settings.json             ← Claude Code / IDE — points to AGENTS.md
+├── .codex/
+│   └── config.toml               ← Codex — points to AGENTS.md
+├── .cursor/
+│   └── rules/
+│       └── devops.mdc            ← Cursor IDE rules — points to AGENTS.md
 ├── .gemini/
 │   └── config.yaml               ← Gemini Code Assist (GitHub App) settings
 ├── coder-templates/
