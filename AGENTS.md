@@ -50,6 +50,8 @@ These integrations use repo context and should follow **Review guidelines** belo
 | **Claude** (Anthropic GitHub App / Chat) | Optional connector; same repo access as configured in GitHub. |
 | **Claude Code Review** | GitHub Action: `.github/workflows/claude-review.yml` using `anthropics/claude-code-action` + `ANTHROPIC_API_KEY`. Runs on PRs to `main` and on `@claude` in comments. Review prompt references this file and **`CLAUDE.md`** stub points here. |
 
+**GitHub OIDC / workflow validation:** The action exchanges an OIDC token for an app token. GitHub requires **`.github/workflows/claude-review.yml` on the PR branch to match `main`** (same content) for that exchange. If a PR **only updates that workflow file**, the job may **skip** the action (with a notice) until you merge—then future PRs work. If you see `401 Workflow validation failed`, merge the workflow to `main` first, or trigger review via **`@claude`** on a PR where this workflow file is unchanged vs `main`.
+
 **`CLAUDE.md`** at the repo root is a short pointer to this file so Claude-specific tooling that expects `CLAUDE.md` still lands on the same rules.
 
 ### Triggering reviews manually
