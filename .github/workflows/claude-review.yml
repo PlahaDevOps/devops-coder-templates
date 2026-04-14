@@ -1,11 +1,12 @@
 # Requires repository secret: ANTHROPIC_API_KEY (Settings → Secrets and variables → Actions).
 # See: https://github.com/anthropics/claude-code-action and https://docs.anthropic.com/en/docs/claude-code/github-actions
+# v1 uses `prompt` (replaces deprecated `direct_prompt`); use `claude_args` for `--max-turns` (replaces deprecated `max_turns`).
 name: Claude Code Review
 
 on:
   pull_request:
     branches: [main]
-    types: [opened, synchronize, ready_for_review, reopened]
+    types: [opened, synchronize]
   issue_comment:
     types: [created]
 
@@ -25,9 +26,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 1
+          fetch-depth: 0
 
       - name: Run Claude Code
         uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: |
+            Review this pull request. Read CLAUDE.md for project conventions.
+            Post a review with inline comments on any issues found.
+            If no issues, approve with a brief summary of what the PR does.
+          claude_args: |
+            --max-turns 5
