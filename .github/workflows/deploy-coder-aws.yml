@@ -9,7 +9,8 @@ env:
 jobs:
   deploy:
     name: Deploy template to Coder (AWS)
-    runs-on: ubuntu-latest
+    # GitHub Actions self-hosted runner on AWS EC2 (Ubuntu); register under repo Settings → Actions → Runners.
+    runs-on: [self-hosted, linux, X64]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
