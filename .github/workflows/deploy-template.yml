@@ -1,5 +1,6 @@
 # On push to main, push workspace templates to your Coder deployment (requires CODER_URL + CODER_TOKEN secrets).
 # Self-hosted runner: use a Windows machine on your network so CODER_URL can be localhost/LAN (see .github/self-hosted-runner.md).
+# Use a Windows runner label so jobs are not picked up by the Linux EC2 runner (deploy-coder-aws.yml).
 name: Deploy Coder Template
 
 on:
@@ -15,7 +16,7 @@ env:
 jobs:
   deploy:
     name: Deploy template to Coder
-    runs-on: self-hosted
+    runs-on: [self-hosted, windows, X64]
 
     defaults:
       run:

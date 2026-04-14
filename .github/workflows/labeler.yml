@@ -1,3 +1,4 @@
+# Runner: same as deploy-coder-aws.yml (self-hosted on AWS EC2 Ubuntu, x64).
 name: Auto Label
 
 on:
@@ -7,7 +8,8 @@ on:
 jobs:
   label:
     name: Label PR
-    runs-on: self-hosted
+    # GitHub Actions self-hosted runner on AWS EC2 (Ubuntu); register under repo Settings → Actions → Runners.
+    runs-on: [self-hosted, linux, X64]
     permissions:
       contents: read
       pull-requests: write

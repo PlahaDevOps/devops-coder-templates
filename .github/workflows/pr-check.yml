@@ -1,4 +1,5 @@
 # Runs on every PR targeting main (no paths filter — otherwise PRs that only touch README/docker-compose/etc. skip checks).
+# Runner: same as deploy-coder-aws.yml (self-hosted on AWS EC2 Ubuntu, x64).
 name: PR Checks
 
 on:
@@ -11,10 +12,14 @@ permissions:
   pull-requests: write
   issues: write
 
+env:
+  TFSEC_VERSION: "1.28.13"
+
 jobs:
   terraform-validate:
     name: Validate Terraform (${{ matrix.template }})
-    runs-on: self-hosted
+    # GitHub Actions self-hosted runner on AWS EC2 (Ubuntu); register under repo Settings → Actions → Runners.
+    runs-on: [self-hosted, linux, X64]
     strategy:
       fail-fast: false
       matrix:
@@ -22,14 +27,18 @@ jobs:
 
     defaults:
       run:
-        shell: powershell
         working-directory: ./coder-templates/${{ matrix.template }}
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Self-hosted Windows: use Terraform on PATH (skip hashicorp/setup-terraform — unreliable here).
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.9.8"
+          terraform_wrapper: false
+
       - name: Check Terraform installed
         run: terraform --version
 
@@ -49,10 +58,10 @@ jobs:
       - name: tfsec Security Scan
         id: tfsec
         run: |
-          $ErrorActionPreference = "Stop"
-          $url = "https://github.com/aquasecurity/tfsec/releases/latest/download/tfsec-windows-amd64.exe"
-          Invoke-WebRequest -Uri $url -OutFile "$env:RUNNER_TEMP\tfsec.exe" -UseBasicParsing
-          & "$env:RUNNER_TEMP\tfsec.exe" . --soft-fail --format markdown
+          set -euo pipefail
+          curl -fsSL "https://github.com/aquasecurity/tfsec/releases/download/v${TFSEC_VERSION}/tfsec-linux-amd64" -o "${RUNNER_TEMP}/tfsec"
+          chmod +x "${RUNNER_TEMP}/tfsec"
+          "${RUNNER_TEMP}/tfsec" . --soft-fail --format markdown
         continue-on-error: true
 
       - name: Comment tfsec Results
