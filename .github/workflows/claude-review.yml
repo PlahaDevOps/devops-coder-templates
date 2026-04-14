@@ -1,6 +1,10 @@
 # Requires repository secret: ANTHROPIC_API_KEY (Settings → Secrets and variables → Actions).
 # See: https://github.com/anthropics/claude-code-action and https://docs.anthropic.com/en/docs/claude-code/github-actions
-# v1 uses `prompt` (replaces deprecated `direct_prompt`); use `claude_args` for `--max-turns` (replaces deprecated `max_turns`).
+#
+# OIDC / app-token exchange: GitHub requires this workflow file on the PR branch to MATCH
+# default branch (main). PRs that only change claude-review.yml will skip the action below
+# until merged—otherwise you get: "Workflow validation failed... identical content to default branch".
+# v1 uses `prompt`; use `claude_args` for `--max-turns`.
 name: Claude Code Review
 
 on:
@@ -28,13 +32,36 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: OIDC gate (skip if PR only changes this workflow vs base)
+        id: oidc
+        run: |
+          if [ "${{ github.event_name }}" != "pull_request" ]; then
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git fetch origin "${{ github.base_ref }}" --depth=1
+          if git diff --name-only "origin/${{ github.base_ref }}...HEAD" | grep -qx '.github/workflows/claude-review.yml'; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "::notice title=Claude Code Review skipped::This PR changes claude-review.yml. GitHub OIDC requires the file to match main until merged. Merge first; Claude runs on later PRs—or use @claude after merge."
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Run Claude Code
+        if: |
+          github.event_name == 'issue_comment' ||
+          (github.event_name == 'pull_request' && steps.oidc.outputs.skip != 'true')
         uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           prompt: |
-            Review this pull request. Read CLAUDE.md for project conventions.
+            Review this pull request using the repository root AGENTS.md for project conventions and review rules (single canonical file for all agents/bots).
             Post a review with inline comments on any issues found.
             If no issues, approve with a brief summary of what the PR does.
           claude_args: |
             --max-turns 5
+
+      - name: Explain skip (workflow file changed in this PR)
+        if: github.event_name == 'pull_request' && steps.oidc.outputs.skip == 'true'
+        run: |
+          echo "Claude Code Action not run: claude-review.yml differs from main. Merge to main, then re-run workflow or open a follow-up PR."
