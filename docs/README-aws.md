@@ -196,9 +196,9 @@ helm uninstall coder -n coder
 
 ### Coder CLI
 ```bash
-# Login
-export CODER_URL=http://18.191.148.4:32480
-coder login $CODER_URL
+# Login (use the same URL as in the browser — e.g. Traefik ingress on :80)
+export CODER_URL=http://coder.<YOUR_PUBLIC_IP>.nip.io
+coder login "$CODER_URL"
 
 # List templates
 coder templates list
