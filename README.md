@@ -7,21 +7,19 @@
 | Guide | What it covers |
 |-------|----------------|
 | **[docs/README-local.md](docs/README-local.md)** | **Local development** — Docker Compose, `.env`, GitHub OAuth on `localhost`, ngrok, self-hosted runner deploy secrets, troubleshooting. |
-| **[docs/README-aws.md](docs/README-aws.md)** | **AWS EC2 + Ubuntu** — k3s, Helm, `coder-values.yaml`, NodePort, namespaces, GitHub secrets (`AWS_CODER_*`), ops commands, issues we hit. |
-
-The older filename **`setup-guide.md`** still exists as a **shortcut** to the AWS doc (same content lives under `docs/`).
+| **[docs/README-aws.md](docs/README-aws.md)** | **AWS EC2 + Ubuntu** — k3s, Terraform (`infrastructure/`) for Coder Helm + ingress, GitHub secrets (`AWS_CODER_*`), ops commands, issues we hit. |
 
 ## Project layout (short)
 
 ```text
 ├── docs/
 │   ├── README-local.md       ← Local Docker Compose workflow
-│   └── README-aws.md         ← EC2 / k3s / Helm workflow
+│   └── README-aws.md         ← EC2 / k3s / Coder server + templates
+├── infrastructure/           ← Terraform: Coder Helm release, ingress, namespaces (AWS)
 ├── coder-templates/
 │   ├── docker-dev/           ← Docker-based workspace template
 │   └── k8s-dev/             ← Kubernetes workspace template
 ├── docker-compose.yml        ← Local Coder + ngrok
-├── coder-values.yaml         ← Example Helm values (AWS); adjust for your cluster
 └── .github/workflows/        ← PR checks, template deploy (local + AWS runners)
 ```
 

@@ -10,5 +10,6 @@ anthropic_api_key          = "placeholder"
 
 n8n_enabled = false
 
-# Optional — if Terraform runs as non-root and uses a copied kubeconfig:
+# On EC2 as non-root: default path /etc/rancher/k3s/k3s.yaml is not readable — copy first:
+#   mkdir -p ~/.kube && sudo cp /etc/rancher/k3s/k3s.yaml ~/.kube/config && sudo chown "$USER:$USER" ~/.kube/config
 # kubeconfig_path = "/home/ubuntu/.kube/config"

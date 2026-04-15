@@ -1,6 +1,6 @@
 # Coder on AWS EC2 (k3s + Helm)
 
-Deploy the Coder **server** on Ubuntu EC2 with k3s, Helm, and NodePort access. For **local Docker Compose** development on your laptop, see **[README-local.md](./README-local.md)**.
+Deploy the Coder **server** on Ubuntu EC2 with k3s and **Terraform** under [`infrastructure/`](../infrastructure/) (Helm release + ingress). For **local Docker Compose** development on your laptop, see **[README-local.md](./README-local.md)**.
 
 ← [Repository overview](../README.md)
 
@@ -108,13 +108,14 @@ Developers create workspaces from updated templates
 | File/Path | Purpose |
 |-----------|---------|
 | `/etc/rancher/k3s/k3s.yaml` | k3s kubeconfig (how tools talk to the cluster) |
-| `~/coder-values.yaml` (or copy from repo **`coder-values.yaml`**) | Helm values for Coder (URL, resources, GitHub OAuth) |
-| `~/devops-coder-templates/` | Cloned GitHub repo with Coder templates |
+| `~/devops-coder-templates/infrastructure/` | Terraform for Coder Helm values (`coder.tf`), ingress, namespaces; `terraform.tfvars` for EC2 IP and secrets |
+| `~/devops-coder-templates/` | Cloned GitHub repo with templates and infrastructure code |
 
 ### In the GitHub Repo
 
 | File/Path | Purpose |
 |-----------|---------|
+| `infrastructure/` | Terraform: Coder Helm release, Traefik ingress, RBAC, secrets (OAuth, etc.) |
 | `.github/workflows/deploy-coder-aws.yml` | CI/CD pipeline for AWS deployment |
 | `.github/workflows/deploy-template.yml` | Pipeline for local/Windows self-hosted runner (`CODER_URL` / `CODER_TOKEN`) |
 | `coder-templates/docker-dev/` | Docker-based workspace template |
@@ -176,12 +177,13 @@ sudo kubectl get svc -n coder
 # View Coder logs
 sudo kubectl logs -n coder -l app.kubernetes.io/name=coder --tail=50
 
-# Helm operations
-helm list -n coder                    # List releases
-helm upgrade coder coder-v2/coder \   # Upgrade with new values
-  --namespace coder \
-  --values coder-values.yaml
-helm uninstall coder -n coder         # Uninstall
+# Terraform (preferred — Helm values are defined in infrastructure/coder.tf)
+cd ~/devops-coder-templates/infrastructure && terraform apply
+
+# Helm only (debugging; keep in sync with coder.tf)
+helm list -n coder
+helm upgrade coder coder --repo https://helm.coder.com/v2 --namespace coder --reuse-values
+helm uninstall coder -n coder
 ```
 
 ### Coder CLI
@@ -216,18 +218,9 @@ sudo kubectl describe pod <pod-name> -n coder-workspaces
 
 ## Problems We Hit & How We Fixed Them
 
-### 1. Pod Evictions (Insufficient Memory)
-**Problem:** Coder's default resource requests (2 CPU, 4GB RAM) exceeded t3.small capacity.
-**Fix:** Lowered resource requests in `coder-values.yaml`:
-```yaml
-resources:
-  requests:
-    cpu: "250m"
-    memory: "256Mi"
-  limits:
-    cpu: "500m"
-    memory: "512Mi"
-```
+### 1. Pod evictions / CrashLoopBackOff (memory or config)
+**Problem:** Chart defaults can exceed a small node, or explicit `resources` in Terraform are too low (OOM), or `CODER_WILDCARD_ACCESS_URL` included a scheme (`http://`) and Coder refused to start.
+**Fix:** Tune the `coder` Helm `values` block in **`infrastructure/coder.tf`** (and `locals.tf` for URLs). Wildcard access URL must be a **hostname pattern only** (e.g. `*.203.0.113.nip.io`), not `http://*.…`.
 
 ### 2. Disk Full (8GB instead of 20GB)
 **Problem:** EC2 launched with default 8GB disk, not 20GB.
@@ -307,7 +300,7 @@ If you stop and restart the EC2 instance:
 1. Note the **new public IP** from AWS Console
 2. SSH in with the new IP
 3. k3s and Coder should auto-start
-4. Find the new NodePort: `sudo kubectl get svc -n coder`
-5. Update `coder-values.yaml` with new IP and upgrade Helm
+4. Find the new NodePort (if using NodePort): `sudo kubectl get svc -n coder`
+5. Set **`ec2_public_ip`** in `infrastructure/terraform.tfvars`, then run **`terraform apply`** in `infrastructure/`
 6. Update `AWS_CODER_URL` secret in GitHub
 7. Open the NodePort in Security Group if needed
