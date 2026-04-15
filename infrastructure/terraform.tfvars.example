@@ -1,0 +1,14 @@
+# Copy to terraform.tfvars (gitignored) and set real values.
+# terraform.tfvars must never be committed.
+
+ec2_public_ip              = "18.117.108.78"
+domain_name                = "" # empty => <ip>.nip.io
+
+github_oauth_client_id     = "your-github-oauth-client-id"
+github_oauth_client_secret = "your-github-oauth-client-secret"
+anthropic_api_key          = "placeholder"
+
+n8n_enabled = false
+
+# Optional — if Terraform runs as non-root and uses a copied kubeconfig:
+# kubeconfig_path = "/home/ubuntu/.kube/config"
