@@ -10,7 +10,8 @@ anthropic_api_key          = "placeholder"
 
 n8n_enabled = false
 
-# HTTPS (Let's Encrypt). Set a real email; open EC2 security group TCP 443; update GitHub OAuth callback to https://coder.<domain>/...
+# HTTPS (Let's Encrypt). When enable_tls = true: set acme_email, open EC2 TCP 443, OAuth callback https://...
+enable_tls = false
 # acme_email       = "you@example.com"
 # acme_use_staging = true  # optional: staging CA while testing (untrusted in browsers)
 

@@ -2,8 +2,8 @@ locals {
   # If no domain provided, use free nip.io tied to the EC2 public IP
   base_domain = var.domain_name != "" ? var.domain_name : "${var.ec2_public_ip}.nip.io"
 
-  # TLS when acme_email is set (cert-manager + Let's Encrypt in cert-manager.tf)
-  tls_enabled = var.acme_email != ""
+  # TLS only when explicitly enabled and acme_email is set (cert-manager.tf)
+  tls_enabled = var.enable_tls && var.acme_email != ""
 
   # App hostnames (pair with ingress / Traefik; HTTPS when tls_enabled)
   coder_hostname    = "coder.${local.base_domain}"

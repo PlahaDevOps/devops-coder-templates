@@ -19,6 +19,6 @@ output "base_domain" {
 }
 
 output "tls_enabled" {
-  description = "Whether HTTPS is configured (acme_email set → cert-manager + Let's Encrypt)"
+  description = "Whether HTTPS is configured (enable_tls and acme_email → cert-manager + Let's Encrypt)"
   value       = local.tls_enabled
 }

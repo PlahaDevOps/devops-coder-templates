@@ -1,4 +1,4 @@
-# Let's Encrypt TLS via cert-manager (optional — set acme_email in terraform.tfvars).
+# Let's Encrypt TLS via cert-manager (optional — set enable_tls = true and acme_email in terraform.tfvars).
 # Requires EC2 security group to allow inbound TCP 443 to the instance.
 #
 # ClusterIssuer is applied with kubectl (not kubernetes_manifest) because the Kubernetes

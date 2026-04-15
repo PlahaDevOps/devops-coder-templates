@@ -168,7 +168,7 @@ df -h /
 
 ### HTTPS (Let's Encrypt via Terraform)
 
-Optional TLS is in **`infrastructure/cert-manager.tf`**: set **`acme_email`** in **`terraform.tfvars`**, open EC2 **TCP 443**, run **`terraform apply`**. Update your **GitHub OAuth app** callback URL from `http://` to **`https://`** for `coder.<domain>` (see Coder’s external auth docs for the exact path).
+Optional TLS is in **`infrastructure/cert-manager.tf`**: set **`enable_tls = true`**, **`acme_email`**, open EC2 **TCP 443**, run **`terraform apply`**. Use **`enable_tls = false`** (default) for HTTP only. Update your **GitHub OAuth app** callback URL to **`https://`** when using TLS (see Coder’s external auth docs for the exact path).
 
 If you previously had a failed **`kubernetes_manifest`** ClusterIssuer in Terraform state, remove it once: **`terraform state rm 'kubernetes_manifest.clusterissuer_letsencrypt[0]'`** (or the address shown in **`terraform state list`**), then apply again.
 
@@ -279,7 +279,7 @@ sudo kubectl create secret generic anthropic-api-key \
 |------|---------|
 | 22 | SSH access |
 | 80 | HTTP |
-| 443 | HTTPS (required if you enable TLS in `infrastructure/` with `acme_email` in `terraform.tfvars`) |
+| 443 | HTTPS (required when `enable_tls = true` and `acme_email` are set in `terraform.tfvars`) |
 | 6443 | Kubernetes API |
 | 8080 | Apps |
 | 30000-32767 | Kubernetes NodePort range (open this full range) |

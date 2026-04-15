@@ -18,8 +18,14 @@ variable "domain_name" {
 }
 
 # ─── TLS (Let's Encrypt via cert-manager) ─────────────
+variable "enable_tls" {
+  description = "If true, deploy cert-manager and serve Coder over HTTPS (requires acme_email). If false, HTTP only and no cert-manager resources."
+  type        = bool
+  default     = false
+}
+
 variable "acme_email" {
-  description = "Email for Let's Encrypt registration. Leave empty to keep HTTP only (no cert-manager). When set, open EC2 TCP 443 and update GitHub OAuth callback to https://coder.<domain>/external-auth/..."
+  description = "Email for Let's Encrypt (required when enable_tls is true). Ignored when enable_tls is false."
   type        = string
   default     = ""
 }
