@@ -55,11 +55,10 @@ resource "coder_agent" "main" {
     echo "Welcome to your workspace!"
     sudo apt-get update -q
     sudo apt-get install -y git curl wget
-    REPO_DIR="/home/coder/devops-coder-templates"
-    if [ ! -d "$$REPO_DIR/.git" ]; then
-      git clone https://github.com/PlahaDevOps/devops-coder-templates.git "$$REPO_DIR" || true
+    if [ ! -d /home/coder/devops-coder-templates/.git ]; then
+      git clone https://github.com/PlahaDevOps/devops-coder-templates.git /home/coder/devops-coder-templates || true
     else
-      ( cd "$$REPO_DIR" && git pull --ff-only ) || true
+      ( cd /home/coder/devops-coder-templates && git pull --ff-only ) || true
     fi
     echo "Ready!"
   EOT
