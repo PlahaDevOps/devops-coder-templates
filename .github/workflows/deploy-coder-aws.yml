@@ -3,8 +3,8 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths:
-      - "coder-templates/**"
+    # Intentionally no paths: filter — path globs are easy to misconfigure and skip runs.
+    # Pushes docker-dev + k8s-dev to Coder; safe to re-run (templates are versioned in Coder).
 env:
   CODER_CLI_VERSION: "2.31.7"
 jobs:
