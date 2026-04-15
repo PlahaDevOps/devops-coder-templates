@@ -45,7 +45,7 @@ module "cursor" {
   source   = "registry.coder.com/coder/cursor/coder"
   version  = "1.4.1"
   agent_id = coder_agent.main.id
-  folder   = "/home/coder"
+  folder   = local.default_repo_dir
 }
 
 # VS Code Desktop â€” enabled for standard+ profiles
@@ -54,7 +54,7 @@ module "vscode" {
   source   = "registry.coder.com/coder/vscode-desktop/coder"
   version  = "1.2.1"
   agent_id = coder_agent.main.id
-  folder   = "/home/coder"
+  folder   = local.default_repo_dir
 }
 
 # JupyterLab â€” only enabled for large/xlarge profiles
@@ -70,7 +70,7 @@ module "jupyterlab" {
           "Content-Security-Policy" = "frame-ancestors 'self' ${data.coder_workspace.me.access_url}"
         }
       }
-      root_dir = "/home/coder"
+      root_dir = local.default_repo_dir
     }
   })
 }

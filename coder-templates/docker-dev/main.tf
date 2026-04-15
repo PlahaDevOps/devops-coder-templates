@@ -55,6 +55,12 @@ resource "coder_agent" "main" {
     echo "Welcome to your workspace!"
     sudo apt-get update -q
     sudo apt-get install -y git curl wget
+    REPO_DIR="/home/coder/devops-coder-templates"
+    if [ ! -d "$$REPO_DIR/.git" ]; then
+      git clone https://github.com/PlahaDevOps/devops-coder-templates.git "$$REPO_DIR" || true
+    else
+      ( cd "$$REPO_DIR" && git pull --ff-only ) || true
+    fi
     echo "Ready!"
   EOT
 }
@@ -65,7 +71,7 @@ module "cursor" {
   source   = "registry.coder.com/coder/cursor/coder"
   version  = "1.4.1"
   agent_id = coder_agent.main.id
-  folder   = "/home/coder"
+  folder   = "/home/coder/devops-coder-templates"
 }
 
 resource "docker_container" "workspace" {

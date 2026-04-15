@@ -41,6 +41,17 @@ resource "coder_agent" "main" {
     sudo apt-get update -q
     sudo apt-get install -y git curl wget vim unzip jq nano
 
+    # Primary dev repo (git-clone module also runs; ensures clone if module order skipped)
+    REPO_DIR="${local.default_repo_dir}"
+    REPO_URL="${data.coder_parameter.repo_url.value}"
+    if [ -n "$$REPO_URL" ]; then
+      if [ ! -d "$$REPO_DIR/.git" ]; then
+        git clone "$$REPO_URL" "$$REPO_DIR" || echo "[repo] clone failed — check URL and GitHub auth"
+      else
+        ( cd "$$REPO_DIR" && git pull --ff-only ) || true
+      fi
+    fi
+
     # Setup SSH public key from Coder workspace owner
     mkdir -p ~/.ssh
     chmod 700 ~/.ssh

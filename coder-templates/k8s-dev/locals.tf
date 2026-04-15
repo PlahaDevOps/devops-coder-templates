@@ -1,13 +1,21 @@
 locals {
-  namespace       = "coder-workspaces"
-  deployment_name = "coder-${lower(data.coder_workspace.me.id)}"
+  namespace           = "coder-workspaces"
+  deployment_name     = "coder-${lower(data.coder_workspace.me.id)}"
+  access_url_raw      = data.coder_workspace.me.access_url
+  coder_agent_api_url = trimsuffix(local.access_url_raw, "/")
 
-  # Coder API URL for agents inside the workspace pod (Docker Desktop K8s → host Coder).
-  # For cloud K8s, set to your public CODER_ACCESS_URL (https://...) instead.
-  coder_agent_api_url = "http://host.docker.internal:3000"
-
-  # Host:port only (no scheme) — same shape as claude-code module's ARG_CODER_HOST (from access_url).
+  # Host:port only (no scheme) — AgentAPI / sed patches (claude-code post_install).
   coder_agent_api_host = replace(replace(local.coder_agent_api_url, "https://", ""), "http://", "")
+
+  # Pod entrypoint: init_script embeds localhost for agent download. Docker Desktop → host.docker.internal;
+  # AWS / public access_url → rewrite localhost:3000 to the workspace access URL.
+  _agent_init = coder_agent.main.init_script
+  pod_agent_command = (
+    can(regex("localhost|127\\.0\\.0\\.1", local.access_url_raw)) ? replace(replace(local._agent_init, "127.0.0.1", "host.docker.internal"), "localhost", "host.docker.internal") : replace(replace(local._agent_init, "http://127.0.0.1:3000", local.coder_agent_api_url), "http://localhost:3000", local.coder_agent_api_url)
+  )
+
+  # Default clone dir when using Parameter repo_url (git-clone module + startup_script fallback).
+  default_repo_dir = "/home/coder/devops-coder-templates"
 
   # Git config â€” uses full name if available, falls back to username
   git_author_name  = coalesce(data.coder_workspace_owner.me.full_name, data.coder_workspace_owner.me.name)
