@@ -10,6 +10,7 @@ Coder **workspace templates** in **Terraform**, deployed against **k3s/Kubernete
 |------|------|
 | Docker-based template | `coder-templates/docker-dev/` |
 | Kubernetes-based template | `coder-templates/k8s-dev/` |
+| Coder server on AWS (Helm, ingress) | `infrastructure/` |
 
 Each template has its own `main.tf` and related Terraform files. Templates use the **Coder** Terraform provider; keep provider versions pinned.
 
@@ -27,8 +28,8 @@ Layout at a glance (workflows match this repo):
 ├── README.md                     ← Repo overview + links to docs
 ├── docs/
 │   ├── README-local.md           ← Local Docker Compose Coder setup
-│   └── README-aws.md             ← AWS EC2 + k3s + Helm Coder setup
-├── setup-guide.md                ← Redirects to docs/README-aws.md
+│   └── README-aws.md             ← AWS EC2 + k3s + Coder server setup
+├── infrastructure/               ← Terraform (Helm): Coder server, ingress, secrets (AWS)
 ├── .claude/
 │   └── settings.json             ← Claude Code / IDE — points to AGENTS.md
 ├── .codex/
