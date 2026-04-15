@@ -35,7 +35,7 @@ docker compose up -d
 
 4. Verify: **http://localhost:3000/deployment/userauth**
 
-Day-to-day commands (start, stop, restart, logs, recreating after config edits): see **`../README.md`** in the **Coder** folder.
+Day-to-day commands (start, stop, restart, logs, recreating after config edits): see **`../docs/README-local.md`** in the **Coder** folder.
 
 ### Workspace build: `Error pinging Docker` / `docker_volume` / Terraform exit 1
 
@@ -43,4 +43,4 @@ The Coder **server** talks to Docker over **TCP** (`DOCKER_HOST`, default `tcp:/
 
 ## CI
 
-Every PR targeting **`main`** runs **Terraform format check** and **`terraform validate`** (see `.github/workflows/pr-check.yml`). Pushes to **`main`** that change **`coder-templates/**`** run **template deploy** when `CODER_URL` and `CODER_TOKEN` are set. Details: **`../README.md`**.
+Every PR targeting **`main`** runs **Terraform format check** and **`terraform validate`** (see `.github/workflows/pr-check.yml`). Pushes to **`main`** that change **`coder-templates/**`** run **template deploy** when `CODER_URL` and `CODER_TOKEN` are set. Details: **`../docs/README-local.md`**.
