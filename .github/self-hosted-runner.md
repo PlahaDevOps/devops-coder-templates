@@ -53,7 +53,7 @@ This repository’s workflows use `runs-on: self-hosted` (see `.github/workflows
 
 ## Notes
 
-- **PR Checks** can stay on `ubuntu-latest` if you prefer not to leave your PC online for every PR; **Deploy** benefits most from self-hosted when `CODER_URL` is local. To do that, set `runs-on: ubuntu-latest` only in `.github/workflows/pr-check.yml` and leave `deploy-template.yml` on `self-hosted`.
+- **Template deploy to AWS** uses **`deploy-coder-aws.yml`** on **GitHub-hosted** `ubuntu-latest` (secrets **`AWS_CODER_URL`** / **`AWS_CODER_TOKEN`**). **`deploy-template.yml`** is **manual only** (`workflow_dispatch`) for **local** Coder via this Windows runner (`CODER_URL` / **`CODER_TOKEN`**).
 - Keep the runner machine **on** and **network-available** when Actions should run.
 - Install **Terraform** is handled by `hashicorp/setup-terraform` in the workflow; **Git** is usually present on developer machines—install [Git for Windows](https://git-scm.com/download/win) if checkout fails.
 

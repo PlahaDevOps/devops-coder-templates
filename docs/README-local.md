@@ -17,7 +17,8 @@ Coder/
   ├── .github/
   │     ├── workflows/
   │     │     ├── pr-check.yml          ← Terraform fmt, validate, tfsec on PRs to main
-  │     │     ├── deploy-template.yml   ← Push template when main changes under coder-templates/
+  │     │     ├── deploy-coder-aws.yml  ← Push templates to Coder on AWS (GitHub-hosted)
+  │     │     ├── deploy-template.yml   ← Manual: push templates to local Coder (Windows runner)
   │     │     └── labeler.yml           ← Auto-label PRs
   │     ├── labeler.yml                 ← Label rules
   │     ├── dependabot.yml              ← Dependency updates
@@ -102,7 +103,7 @@ Uses a **self-hosted Windows runner**. Install and register it using **`.github/
 | Workflow | When | What |
 |----------|------|------|
 | `pr-check.yml` | Every **PR to `main`** | Same checks for **`coder-templates/docker-dev`** and **`coder-templates/k8s-dev`** (matrix); PR comments |
-| `deploy-template.yml` | **Push to `main`** changing files under **`coder-templates/**`** | `coder templates push` for **`docker-dev`** and **`k8s-dev`** |
+| `deploy-template.yml` | **Manual** (**Actions → Run workflow**) — self-hosted **Windows** runner | `coder templates push` to **local** Coder (`CODER_URL` / `CODER_TOKEN`). For **AWS**, use **`deploy-coder-aws.yml`** (GitHub-hosted). |
 | `labeler.yml` | PR **opened**, **synchronize**, **reopened** | Labels from `.github/labeler.yml` |
 
 ### GitHub secrets (deploy)

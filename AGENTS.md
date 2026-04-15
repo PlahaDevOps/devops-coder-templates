@@ -50,7 +50,7 @@ Layout at a glance (workflows match this repo):
     ├── labeler.yml               ← Auto Label on PRs
     ├── claude-review.yml         ← Claude Code Action + ANTHROPIC_API_KEY
     ├── deploy-coder-aws.yml      ← Push templates to Coder (AWS secrets)
-    └── deploy-template.yml       ← Push templates (local/Windows self-hosted)
+    └── deploy-template.yml       ← Manual: templates to local Coder (Windows self-hosted runner)
 ```
 
 **`coder-templates/AGENTS.md`** is a stub that redirects to this root file.

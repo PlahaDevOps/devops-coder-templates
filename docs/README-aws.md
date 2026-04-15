@@ -117,7 +117,7 @@ Developers create workspaces from updated templates
 |-----------|---------|
 | `infrastructure/` | Terraform: Coder Helm release, Traefik ingress, RBAC, secrets (OAuth, etc.) |
 | `.github/workflows/deploy-coder-aws.yml` | CI/CD pipeline for AWS deployment |
-| `.github/workflows/deploy-template.yml` | Pipeline for local/Windows self-hosted runner (`CODER_URL` / `CODER_TOKEN`) |
+| `.github/workflows/deploy-template.yml` | **Manual only** — local Coder via Windows self-hosted runner (`CODER_URL` / `CODER_TOKEN`) |
 | `coder-templates/docker-dev/` | Docker-based workspace template |
 | `coder-templates/k8s-dev/main.tf` | Kubernetes provider config (uses in-cluster auth) |
 | `coder-templates/k8s-dev/kubernetes.tf` | Pod and PVC definitions for workspaces |
