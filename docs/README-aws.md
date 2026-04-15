@@ -170,6 +170,8 @@ df -h /
 
 Optional TLS is in **`infrastructure/cert-manager.tf`**: set **`acme_email`** in **`terraform.tfvars`**, open EC2 **TCP 443**, run **`terraform apply`**. Update your **GitHub OAuth app** callback URL from `http://` to **`https://`** for `coder.<domain>` (see Coder’s external auth docs for the exact path).
 
+If you previously had a failed **`kubernetes_manifest`** ClusterIssuer in Terraform state, remove it once: **`terraform state rm 'kubernetes_manifest.clusterissuer_letsencrypt[0]'`** (or the address shown in **`terraform state list`**), then apply again.
+
 Let’s Encrypt uses **HTTP-01**, so it can issue a cert for the main hostname (e.g. `coder.x.x.x.nip.io`). A **wildcard** cert for `*.x.x.x.nip.io` needs **DNS-01** with a DNS provider; workspace preview URLs may still show “Not secure” until you use a real domain with DNS automation.
 
 ### Coder Management

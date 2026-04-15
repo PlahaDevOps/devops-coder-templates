@@ -141,9 +141,10 @@ resource "kubernetes_ingress_v1" "coder" {
         # web = :80; websecure = :443 (k3s Traefik defaults)
         "traefik.ingress.kubernetes.io/router.entrypoints" = local.tls_enabled ? "web,websecure" : "web"
       },
-      # Reference ClusterIssuer so Terraform orders ingress after cert-manager stack (depends_on must be static).
+      # Order ingress after kubectl-applied ClusterIssuer (implicit dep via id).
       local.tls_enabled ? {
-        "cert-manager.io/cluster-issuer" = kubernetes_manifest.clusterissuer_letsencrypt[0].object.metadata["name"]
+        "cert-manager.io/cluster-issuer"     = "letsencrypt-prod"
+        "meta.terraform/clusterissuer-ready" = null_resource.clusterissuer_letsencrypt[0].id
       } : {}
     )
   }
