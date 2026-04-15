@@ -114,14 +114,17 @@ resource "helm_release" "coder" {
       service = {
         type = "ClusterIP"
       }
+      # Chart defaults are higher (~4Gi); explicit values replace chart defaults entirely.
+      # 512Mi is too small and commonly causes OOMKilled / CrashLoopBackOff on the server.
+      # If describe/logs still show OOMKilled, raise memory and/or use a larger instance (e.g. t3.medium+).
       resources = {
         requests = {
-          cpu    = "250m"
-          memory = "256Mi"
-        }
-        limits = {
           cpu    = "500m"
           memory = "512Mi"
+        }
+        limits = {
+          cpu    = "1000m"
+          memory = "1024Mi"
         }
       }
     }

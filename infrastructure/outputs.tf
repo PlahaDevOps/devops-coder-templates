@@ -4,7 +4,7 @@ output "coder_url" {
 }
 
 output "coder_wildcard_access_url" {
-  description = "CODER_WILDCARD_ACCESS_URL value (workspace apps)"
+  description = "CODER_WILDCARD_ACCESS_URL (hostname pattern for workspace apps; no scheme)"
   value       = local.coder_wildcard_access_url
 }
 
