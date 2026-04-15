@@ -24,7 +24,11 @@ Layout at a glance (workflows match this repo):
 ```text
 ├── AGENTS.md                     ← This file (single source of truth)
 ├── CLAUDE.md                     ← Pointer to AGENTS.md
-├── README.md                     ← Repo overview (if present)
+├── README.md                     ← Repo overview + links to docs
+├── docs/
+│   ├── README-local.md           ← Local Docker Compose Coder setup
+│   └── README-aws.md             ← AWS EC2 + k3s + Helm Coder setup
+├── setup-guide.md                ← Redirects to docs/README-aws.md
 ├── .claude/
 │   └── settings.json             ← Claude Code / IDE — points to AGENTS.md
 ├── .codex/
