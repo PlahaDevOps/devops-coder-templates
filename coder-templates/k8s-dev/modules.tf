@@ -85,7 +85,7 @@ module "jupyterlab" {
 module "claude_code" {
   count     = data.coder_workspace.me.start_count
   source    = "registry.coder.com/coder/claude-code/coder"
-  version   = "4.7.5"
+  version   = "4.9.2"
   agent_id  = coder_agent.main.id
   workdir   = "/home/coder/devops-coder-templates"
   subdomain = false
