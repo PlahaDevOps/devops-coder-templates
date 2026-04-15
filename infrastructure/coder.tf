@@ -59,6 +59,17 @@ resource "kubernetes_role_binding" "coder_admin" {
   }
 }
 
+# Workspace pods (k8s-dev template) use service_account_name = "coder" in this namespace — distinct from the Coder server SA in namespace `coder`.
+resource "kubernetes_service_account" "coder_workspaces" {
+  metadata {
+    name      = "coder"
+    namespace = kubernetes_namespace.coder_workspaces.metadata[0].name
+    labels    = local.common_labels
+  }
+
+  depends_on = [kubernetes_namespace.coder_workspaces]
+}
+
 # ─── Coder Helm Release ─────────────────────────────
 resource "helm_release" "coder" {
   repository = "https://helm.coder.com/v2"
