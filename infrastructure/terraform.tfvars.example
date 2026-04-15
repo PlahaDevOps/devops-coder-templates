@@ -10,6 +10,10 @@ anthropic_api_key          = "placeholder"
 
 n8n_enabled = false
 
+# HTTPS (Let's Encrypt). Set a real email; open EC2 security group TCP 443; update GitHub OAuth callback to https://coder.<domain>/...
+# acme_email       = "you@example.com"
+# acme_use_staging = true  # optional: staging CA while testing (untrusted in browsers)
+
 # On EC2 as non-root: default path /etc/rancher/k3s/k3s.yaml is not readable — copy first:
 #   mkdir -p ~/.kube && sudo cp /etc/rancher/k3s/k3s.yaml ~/.kube/config && sudo chown "$USER:$USER" ~/.kube/config
 # kubeconfig_path = "/home/ubuntu/.kube/config"

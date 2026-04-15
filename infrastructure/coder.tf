@@ -136,13 +136,28 @@ resource "kubernetes_ingress_v1" "coder" {
   metadata {
     name      = "coder-ingress"
     namespace = kubernetes_namespace.coder.metadata[0].name
-    annotations = {
-      "traefik.ingress.kubernetes.io/router.entrypoints" = "web"
-    }
+    annotations = merge(
+      {
+        # web = :80; websecure = :443 (k3s Traefik defaults)
+        "traefik.ingress.kubernetes.io/router.entrypoints" = local.tls_enabled ? "web,websecure" : "web"
+      },
+      # Reference ClusterIssuer so Terraform orders ingress after cert-manager stack (depends_on must be static).
+      local.tls_enabled ? {
+        "cert-manager.io/cluster-issuer" = kubernetes_manifest.clusterissuer_letsencrypt[0].object.metadata["name"]
+      } : {}
+    )
   }
 
   spec {
     ingress_class_name = "traefik"
+
+    dynamic "tls" {
+      for_each = local.tls_enabled ? [1] : []
+      content {
+        hosts       = [local.coder_hostname]
+        secret_name = "coder-tls"
+      }
+    }
 
     rule {
       host = local.coder_hostname
@@ -162,7 +177,7 @@ resource "kubernetes_ingress_v1" "coder" {
       }
     }
 
-    # Workspace app hostnames: *.ip.nip.io
+    # Workspace app hostnames: *.ip.nip.io (no public wildcard cert via HTTP-01; may stay HTTP)
     rule {
       host = "*.${local.base_domain}"
       http {

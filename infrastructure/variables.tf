@@ -17,6 +17,25 @@ variable "domain_name" {
   default     = ""
 }
 
+# ─── TLS (Let's Encrypt via cert-manager) ─────────────
+variable "acme_email" {
+  description = "Email for Let's Encrypt registration. Leave empty to keep HTTP only (no cert-manager). When set, open EC2 TCP 443 and update GitHub OAuth callback to https://coder.<domain>/external-auth/..."
+  type        = string
+  default     = ""
+}
+
+variable "acme_use_staging" {
+  description = "Use Let's Encrypt staging (avoids rate limits while testing; browsers will not trust the cert)"
+  type        = bool
+  default     = false
+}
+
+variable "cert_manager_version" {
+  description = "cert-manager Helm chart version (Jetstack)"
+  type        = string
+  default     = "v1.14.5"
+}
+
 # ─── Coder ──────────────────────────────────────────
 variable "coder_version" {
   description = "Coder Helm chart version"

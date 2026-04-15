@@ -17,3 +17,8 @@ output "base_domain" {
   description = "Base domain for services (nip.io or custom)"
   value       = local.base_domain
 }
+
+output "tls_enabled" {
+  description = "Whether HTTPS is configured (acme_email set → cert-manager + Let's Encrypt)"
+  value       = local.tls_enabled
+}

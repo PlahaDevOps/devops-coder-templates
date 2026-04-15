@@ -166,6 +166,12 @@ free -m
 df -h /
 ```
 
+### HTTPS (Let's Encrypt via Terraform)
+
+Optional TLS is in **`infrastructure/cert-manager.tf`**: set **`acme_email`** in **`terraform.tfvars`**, open EC2 **TCP 443**, run **`terraform apply`**. Update your **GitHub OAuth app** callback URL from `http://` to **`https://`** for `coder.<domain>` (see Coder’s external auth docs for the exact path).
+
+Let’s Encrypt uses **HTTP-01**, so it can issue a cert for the main hostname (e.g. `coder.x.x.x.nip.io`). A **wildcard** cert for `*.x.x.x.nip.io` needs **DNS-01** with a DNS provider; workspace preview URLs may still show “Not secure” until you use a real domain with DNS automation.
+
 ### Coder Management
 ```bash
 # Check Coder pod
@@ -271,7 +277,7 @@ sudo kubectl create secret generic anthropic-api-key \
 |------|---------|
 | 22 | SSH access |
 | 80 | HTTP |
-| 443 | HTTPS |
+| 443 | HTTPS (required if you enable TLS in `infrastructure/` with `acme_email` in `terraform.tfvars`) |
 | 6443 | Kubernetes API |
 | 8080 | Apps |
 | 30000-32767 | Kubernetes NodePort range (open this full range) |
