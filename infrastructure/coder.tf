@@ -70,6 +70,26 @@ resource "kubernetes_service_account" "coder_workspaces" {
   depends_on = [kubernetes_namespace.coder_workspaces]
 }
 
+# Persist embedded DB / server state across pod restarts (official chart has no coder.persistence key).
+resource "kubernetes_persistent_volume_claim" "coder_server_data" {
+  metadata {
+    name      = "coder-server-data"
+    namespace = kubernetes_namespace.coder.metadata[0].name
+    labels    = local.common_labels
+  }
+
+  spec {
+    access_modes = ["ReadWriteOnce"]
+    resources {
+      requests = {
+        storage = "2Gi"
+      }
+    }
+  }
+
+  depends_on = [kubernetes_namespace.coder]
+}
+
 # ─── Coder Helm Release ─────────────────────────────
 resource "helm_release" "coder" {
   repository = "https://helm.coder.com/v2"
@@ -82,6 +102,7 @@ resource "helm_release" "coder" {
     kubernetes_namespace.coder,
     kubernetes_secret.coder_github_oauth,
     kubernetes_role_binding.coder_admin,
+    kubernetes_persistent_volume_claim.coder_server_data,
   ]
 
   values = [yamlencode({
@@ -94,6 +115,10 @@ resource "helm_release" "coder" {
         {
           name  = "CODER_WILDCARD_ACCESS_URL"
           value = local.coder_wildcard_access_url
+        },
+        {
+          name  = "CODER_DATA"
+          value = "/var/coder-data"
         },
         {
           name  = "CODER_EXTERNAL_AUTH_0_ID"
@@ -128,6 +153,23 @@ resource "helm_release" "coder" {
       ]
       service = {
         type = "ClusterIP"
+      }
+      volumes = [
+        {
+          name = "coder-data"
+          persistentVolumeClaim = {
+            claimName = kubernetes_persistent_volume_claim.coder_server_data.metadata[0].name
+          }
+        },
+      ]
+      volumeMounts = [
+        {
+          name      = "coder-data"
+          mountPath = "/var/coder-data"
+        },
+      ]
+      podSecurityContext = {
+        fsGroup = 1000
       }
       # Chart defaults are higher (~4Gi); explicit values replace chart defaults entirely.
       # 512Mi is too small and commonly causes OOMKilled / CrashLoopBackOff on the server.
