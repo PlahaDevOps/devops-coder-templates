@@ -78,6 +78,9 @@ resource "kubernetes_persistent_volume_claim" "coder_server_data" {
     labels    = local.common_labels
   }
 
+  # WaitForFirstConsumer StorageClasses: bind when a pod mounts the PVC, not at PVC create time.
+  wait_until_bound = false
+
   spec {
     access_modes = ["ReadWriteOnce"]
     resources {
