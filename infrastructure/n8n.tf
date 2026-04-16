@@ -20,9 +20,8 @@ resource "helm_release" "n8n" {
   namespace  = kubernetes_namespace.n8n[0].metadata[0].name
 
   values = [yamlencode({
-    n8n = {
-      encryption_key = "change-me-to-random-string"
-    }
+    # Root-level key per community-charts n8n (not nested under n8n:)
+    encryptionKey = var.n8n_encryption_key
     service = {
       type = "ClusterIP"
     }

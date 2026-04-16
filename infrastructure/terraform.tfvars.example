@@ -9,6 +9,7 @@ github_oauth_client_secret = "your-github-oauth-client-secret"
 anthropic_api_key          = "placeholder"
 
 n8n_enabled = false
+# n8n_encryption_key = "replace-with-long-random-secret" # required when n8n_enabled = true
 
 # HTTPS (Let's Encrypt). When enable_tls = true: set acme_email, open EC2 TCP 443, OAuth callback https://...
 enable_tls = false

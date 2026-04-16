@@ -74,3 +74,15 @@ variable "n8n_enabled" {
   type        = bool
   default     = false
 }
+
+variable "n8n_encryption_key" {
+  description = "n8n encryption key (maps to chart value encryptionKey / N8N_ENCRYPTION_KEY). Required when n8n_enabled is true; use a long random string (chart recommends ~32+ characters)."
+  type        = string
+  sensitive   = true
+  default     = ""
+
+  validation {
+    condition     = !var.n8n_enabled || length(var.n8n_encryption_key) >= 16
+    error_message = "When n8n_enabled is true, set n8n_encryption_key to a strong secret (at least 16 characters)."
+  }
+}
