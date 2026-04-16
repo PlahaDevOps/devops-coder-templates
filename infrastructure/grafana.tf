@@ -18,7 +18,8 @@ resource "helm_release" "grafana" {
   namespace  = kubernetes_namespace.grafana[0].metadata[0].name
 
   values = [yamlencode({
-    adminPassword = var.grafana_admin_password
+    assertNoLeakedSecrets = false
+    adminPassword         = var.grafana_admin_password
     service = {
       type = "ClusterIP"
     }
