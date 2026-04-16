@@ -20,19 +20,15 @@ resource "helm_release" "n8n" {
   namespace  = kubernetes_namespace.n8n[0].metadata[0].name
 
   values = [yamlencode({
-    # Root-level keys per community-charts n8n (not nested under n8n:)
     encryptionKey = var.n8n_encryption_key
     service = {
       type = "ClusterIP"
     }
-    config = {
-      generic = {
-        timezone = "Asia/Kolkata"
-      }
-    }
-    extraEnv = {
-      N8N_SECURE_COOKIE = {
-        value = "false"
+    main = {
+      extraEnvVars = {
+        N8N_SECURE_COOKIE = {
+          value = "false"
+        }
       }
     }
   })]
