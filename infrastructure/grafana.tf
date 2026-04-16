@@ -35,14 +35,15 @@ resource "helm_release" "grafana" {
         root_url = "http://${local.grafana_hostname}"
       }
       "auth.github" = {
-        enabled       = true
-        client_id     = var.grafana_github_client_id
-        client_secret = var.grafana_github_client_secret
-        scopes        = "user:email,read:org"
-        auth_url      = "https://github.com/login/oauth/authorize"
-        token_url     = "https://github.com/login/oauth/access_token"
-        api_url       = "https://api.github.com/user"
-        allow_sign_up = true
+        enabled             = true
+        client_id           = var.grafana_github_client_id
+        client_secret       = var.grafana_github_client_secret
+        scopes              = "user:email,read:org"
+        auth_url            = "https://github.com/login/oauth/authorize"
+        token_url           = "https://github.com/login/oauth/access_token"
+        api_url             = "https://api.github.com/user"
+        allow_sign_up       = true
+        role_attribute_path = format("login == '%s' && 'Admin' || 'Viewer'", var.grafana_github_admin_login)
       }
     }
   })]

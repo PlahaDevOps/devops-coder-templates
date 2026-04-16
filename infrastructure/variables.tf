@@ -114,3 +114,9 @@ variable "grafana_github_client_secret" {
   sensitive   = true
   default     = ""
 }
+
+variable "grafana_github_admin_login" {
+  description = "GitHub username that receives Grafana Admin via role_attribute_path; everyone else gets Viewer"
+  type        = string
+  default     = "PlahaDevOps"
+}
