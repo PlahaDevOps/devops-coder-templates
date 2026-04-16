@@ -27,6 +27,9 @@ resource "helm_release" "grafana" {
       enabled = true
       size    = "1Gi"
     }
+    initChownData = {
+      enabled = false
+    }
     "grafana.ini" = {
       server = {
         root_url = "http://${local.grafana_hostname}"
