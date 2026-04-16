@@ -26,9 +26,7 @@ resource "helm_release" "n8n" {
     }
     main = {
       extraEnvVars = {
-        N8N_SECURE_COOKIE = {
-          value = "false"
-        }
+        N8N_SECURE_COOKIE = "false"
       }
     }
   })]
