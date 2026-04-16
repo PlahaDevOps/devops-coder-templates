@@ -86,3 +86,17 @@ variable "n8n_encryption_key" {
     error_message = "When n8n_enabled is true, set n8n_encryption_key to a strong secret (at least 16 characters)."
   }
 }
+
+# ─── Grafana ────────────────────────────────────────
+variable "grafana_enabled" {
+  description = "Whether to deploy Grafana"
+  type        = bool
+  default     = false
+}
+
+variable "grafana_admin_password" {
+  description = "Grafana admin user password (username is typically admin)"
+  type        = string
+  sensitive   = true
+  default     = "admin"
+}
