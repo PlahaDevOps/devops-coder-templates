@@ -26,6 +26,21 @@ resource "helm_release" "grafana" {
       enabled = true
       size    = "1Gi"
     }
+    "grafana.ini" = {
+      server = {
+        root_url = local.tls_enabled ? "https://${local.grafana_hostname}" : "http://${local.grafana_hostname}"
+      }
+      "auth.github" = {
+        enabled       = length(var.grafana_github_client_id) > 0 && length(var.grafana_github_client_secret) > 0
+        client_id     = var.grafana_github_client_id
+        client_secret = var.grafana_github_client_secret
+        scopes        = "user:email,read:org"
+        auth_url      = "https://github.com/login/oauth/authorize"
+        token_url     = "https://github.com/login/oauth/access_token"
+        api_url       = "https://api.github.com/user"
+        allow_sign_up = true
+      }
+    }
   })]
 }
 

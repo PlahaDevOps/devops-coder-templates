@@ -100,3 +100,17 @@ variable "grafana_admin_password" {
   sensitive   = true
   default     = "admin"
 }
+
+variable "grafana_github_client_id" {
+  description = "GitHub OAuth Client ID for Grafana (optional; leave empty to disable GitHub login)"
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
+variable "grafana_github_client_secret" {
+  description = "GitHub OAuth Client Secret for Grafana (optional)"
+  type        = string
+  sensitive   = true
+  default     = ""
+}

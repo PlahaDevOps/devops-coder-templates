@@ -13,6 +13,8 @@ n8n_enabled = false
 
 grafana_enabled = false
 # grafana_admin_password = "your-secure-password" # set when grafana_enabled = true (avoid default in prod)
+# grafana_github_client_id     = "your-github-oauth-app-client-id"     # optional: Sign in with GitHub
+# grafana_github_client_secret = "your-github-oauth-app-client-secret" # callback e.g. http://grafana.<ip>.nip.io/login/github
 
 # HTTPS (Let's Encrypt). When enable_tls = true: set acme_email, open EC2 TCP 443, OAuth callback https://...
 enable_tls = false
