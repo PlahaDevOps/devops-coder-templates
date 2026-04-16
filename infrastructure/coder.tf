@@ -189,9 +189,9 @@ resource "kubernetes_ingress_v1" "coder" {
       }
     }
 
-    # Workspace app hostnames: *.ip.nip.io (no public wildcard cert via HTTP-01; may stay HTTP)
+    # Workspace apps: *.coder.<base> — avoids colliding with n8n.<base> and other sibling hostnames
     rule {
-      host = "*.${local.base_domain}"
+      host = "*.coder.${local.base_domain}"
       http {
         path {
           path      = "/"

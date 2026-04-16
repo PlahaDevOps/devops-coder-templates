@@ -11,11 +11,11 @@ locals {
   superset_hostname = "superset.${local.base_domain}"
   grafana_hostname  = "grafana.${local.base_domain}"
 
-  # Coder URLs (nip.io wildcard is *.ip.nip.io, not *.coder.ip.nip.io)
+  # Coder URLs — use *.coder.<base> so sibling apps (e.g. n8n.<base>) are not caught by Coder ingress.
   coder_access_url = local.tls_enabled ? "https://${local.coder_hostname}" : "http://${local.coder_hostname}"
   # Wildcard must be hostname pattern only — no scheme (Coder rejects "http://*....").
-  # Add :port if the edge is not :80 (e.g. "*.ip.nip.io:32480" for NodePort).
-  coder_wildcard_access_url = "*.${local.base_domain}"
+  # Add :port if the edge is not :80 (e.g. "*.coder.ip.nip.io:32480" for NodePort).
+  coder_wildcard_access_url = "*.coder.${local.base_domain}"
 
   common_labels = {
     managed_by = "terraform"
