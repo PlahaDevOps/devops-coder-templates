@@ -104,6 +104,10 @@ resource "helm_release" "coder" {
           value = "github"
         },
         {
+          name  = "CODER_OAUTH2_GITHUB_ALLOW_SIGNUPS"
+          value = "true"
+        },
+        {
           name = "CODER_EXTERNAL_AUTH_0_CLIENT_ID"
           valueFrom = {
             secretKeyRef = {
