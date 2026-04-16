@@ -13,9 +13,9 @@ resource "kubernetes_namespace" "n8n" {
 resource "helm_release" "n8n" {
   count = var.n8n_enabled ? 1 : 0
 
-  # Confirm ref with: helm show chart oci://ghcr.io/8gears/n8n (or upstream chart docs)
+  # Community chart: https://community-charts.github.io/helm-charts
   name       = "n8n"
-  repository = "oci://ghcr.io/8gears/n8n"
+  repository = "https://community-charts.github.io/helm-charts"
   chart      = "n8n"
   namespace  = kubernetes_namespace.n8n[0].metadata[0].name
 
